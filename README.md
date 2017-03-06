@@ -1,0 +1,2 @@
+# nesgo
+./nesgo -rom pathtorom
