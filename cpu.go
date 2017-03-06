@@ -33,8 +33,6 @@ func (cpu *CPU) init(rom ROM) {
 
 	fmt.Printf("Number of instructions implemented: %d\n", len(cpu.Instructions))
 
-	//fmt.Printf("Instructions implemented: %d\n", len(cpu.Instructions))
-
 	for i := 0; i < len(cpu.ram); i++ {
 		cpu.ram[i] = 0x00
 	}
@@ -66,9 +64,7 @@ func (cpu *CPU) executeInstruction(i Instruction) error {
 
 func (cpu *CPU) sPush(bytes ...byte) {
 	for _, b := range bytes {
-		high := byte(0x01)
-		low := cpu.SP
-		addr := binary.LittleEndian.Uint16([]byte{low, high}) // stack
+		addr := binary.LittleEndian.Uint16([]byte{cpu.SP, 0x01}) // stack
 		cpu.ram.write(addr, b)
 		cpu.SP--
 	}
@@ -76,10 +72,9 @@ func (cpu *CPU) sPush(bytes ...byte) {
 
 func (cpu *CPU) sPop() byte {
 	cpu.SP++
-	high := byte(0x01)
-	low := cpu.SP
-	addr := binary.LittleEndian.Uint16([]byte{low, high}) //stack
-	return cpu.ram.read(addr)
+	addr := binary.LittleEndian.Uint16([]byte{cpu.SP, 0x01}) //stack
+	val := cpu.ram.read(addr)
+	return val
 }
 
 func (cpu *CPU) immediateAddress() uint16 {
@@ -107,9 +102,9 @@ func (cpu *CPU) zeroPageYAddress() uint16 {
 }
 
 func (cpu *CPU) absoluteAddress() uint16 {
-	high := cpu.ram.read(cpu.PC - 2)
-	low := cpu.ram.read(cpu.PC - 1)
-	addr := binary.LittleEndian.Uint16([]byte{high, low})
+	hi := cpu.ram.read(cpu.PC - 2)
+	lo := cpu.ram.read(cpu.PC - 1)
+	addr := binary.LittleEndian.Uint16([]byte{hi, lo})
 	return addr
 }
 
@@ -436,9 +431,9 @@ func (cpu *CPU) JSR(addr uint16) {
 
 //RTS ...
 func (cpu *CPU) RTS() {
-	high := cpu.sPop()
-	low := cpu.sPop()
-	addr := binary.LittleEndian.Uint16([]byte{low, high})
+	hi := cpu.sPop()
+	lo := cpu.sPop()
+	addr := binary.LittleEndian.Uint16([]byte{lo, hi})
 	cpu.PC = addr
 }
 
