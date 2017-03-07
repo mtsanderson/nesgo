@@ -53,6 +53,7 @@ func (cpu *CPU) executeInstruction(i Instruction) error {
 	_, exists := cpu.Instructions[i.opcode]
 	if !exists {
 		etext := fmt.Sprintf("Unknown opcode: %X at address: %X", cpu.ram.read(cpu.PC), cpu.PC)
+		//fmt.Printf("[% X ]\n", cpu.ram[:0x00FF])
 		return errors.New(etext)
 	}
 	fmt.Printf("%X|%02X|A:%02X|X:%02X|Y:%02X|P:%02X|SP:%02X\n", cpu.PC, i.opcode, cpu.A, cpu.X, cpu.Y, cpu.P, cpu.SP)
@@ -62,31 +63,28 @@ func (cpu *CPU) executeInstruction(i Instruction) error {
 	return nil
 }
 
-func (cpu *CPU) sPush(bytes ...byte) {
-	for _, b := range bytes {
-		addr := binary.LittleEndian.Uint16([]byte{cpu.SP, 0x01}) // stack
-		cpu.ram.write(addr, b)
-		cpu.SP--
-	}
-}
+/*
+===============================================================================
+				Addressing Modes (WIP)
+===============================================================================
+*/
 
-func (cpu *CPU) sPop() byte {
-	cpu.SP++
-	addr := binary.LittleEndian.Uint16([]byte{cpu.SP, 0x01}) //stack
-	val := cpu.ram.read(addr)
-	return val
-}
+//Implied Addressing: Not necessary to have an address returner?
+
+//Accumulator Addressing: Not necessary to have an address returner?
 
 func (cpu *CPU) immediateAddress() uint16 {
 	return cpu.PC - 1
 }
 
 func (cpu *CPU) zeroPageAddress() uint16 {
-	addr := binary.LittleEndian.Uint16([]byte{cpu.ram.read(cpu.PC - 1), 0x00})
-	return addr
+	hi := byte(0x00)
+	lo := cpu.ram.read(cpu.immediateAddress())
+	return binary.LittleEndian.Uint16([]byte{lo, hi})
 }
 
 func (cpu *CPU) zeroPageXAddress() uint16 {
+	fmt.Println("ZERO X PAGE!!")
 	d := cpu.ram.read(cpu.PC - 1)
 	addr := d + cpu.X
 	if addr > 0xFF {
@@ -122,6 +120,31 @@ func (cpu *CPU) relativeAddress() uint16 {
 	return cpu.PC
 }
 
+/*
+===============================================================================
+				Stack Operators
+===============================================================================
+*/
+func (cpu *CPU) sPush(bytes ...byte) {
+	for _, b := range bytes {
+		addr := binary.LittleEndian.Uint16([]byte{cpu.SP, 0x01}) // stack
+		cpu.ram.write(addr, b)
+		cpu.SP--
+	}
+}
+
+func (cpu *CPU) sPop() byte {
+	cpu.SP++
+	addr := binary.LittleEndian.Uint16([]byte{cpu.SP, 0x01}) //stack
+	return cpu.ram.read(addr)
+}
+
+/*
+===============================================================================
+				Flag Setters (WIP)
+===============================================================================
+*/
+
 func (cpu *CPU) checkAndSetZeroFlag(val byte) {
 	if val == 0 {
 		cpu.P = setBit(cpu.P, 1)
@@ -148,7 +171,7 @@ func (cpu *CPU) checkAndSetOverflowFlag(val byte) {
 
 /*
 ===============================================================================
-													INSTRUCTIONS BEGIN
+				INSTRUCTIONS BEGIN
 ===============================================================================
 */
 
@@ -424,17 +447,17 @@ func (cpu *CPU) JMP(addr uint16) {
 //the program counter to the target memory address.
 func (cpu *CPU) JSR(addr uint16) {
 	bytes := make([]byte, 2)
-	binary.LittleEndian.PutUint16(bytes, cpu.PC)
+	binary.BigEndian.PutUint16(bytes, cpu.PC-1)
 	cpu.sPush(bytes...)
 	cpu.PC = addr
 }
 
 //RTS ...
 func (cpu *CPU) RTS() {
-	hi := cpu.sPop()
 	lo := cpu.sPop()
+	hi := cpu.sPop()
 	addr := binary.LittleEndian.Uint16([]byte{lo, hi})
-	cpu.PC = addr
+	cpu.PC = addr + 1
 }
 
 //SBC ... Subtract with Carry
