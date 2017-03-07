@@ -52,7 +52,7 @@ func (cpu *CPU) Step() {
 func (cpu *CPU) executeInstruction(i Instruction) error {
 	_, exists := cpu.Instructions[i.opcode]
 	if !exists {
-		etext := fmt.Sprintf("Unknown opcode: %X at address: %X", cpu.ram.read(cpu.PC), cpu.PC)
+		etext := fmt.Sprintf("Unknown opcode: %02X at address: %X", cpu.ram.read(cpu.PC), cpu.PC)
 		//fmt.Printf("[% X ]\n", cpu.ram[:0x00FF])
 		return errors.New(etext)
 	}
@@ -72,6 +72,9 @@ func (cpu *CPU) executeInstruction(i Instruction) error {
 //Implied Addressing: Not necessary to have an address returner?
 
 //Accumulator Addressing: Not necessary to have an address returner?
+func (cpu *CPU) accumulatorAddress() uint16 {
+	return 0x000A //Temporary hack way to make A addressing work.
+}
 
 func (cpu *CPU) immediateAddress() uint16 {
 	return cpu.PC - 1
@@ -200,6 +203,125 @@ func (cpu *CPU) ADC(addr uint16) {
 	}
 }
 
+//AND ... Logical AND performed between A register and contents of Memory (A&M)
+func (cpu *CPU) AND(addr uint16) {
+	M := cpu.ram.read(addr)
+	cpu.A = (cpu.A & M)
+	cpu.checkAndSetZeroFlag(cpu.A)
+	cpu.checkAndSetNegativeFlag(cpu.A)
+}
+
+//ASL ... Arithmetic Shift Left
+//A,Z,C,N = M*2 or M,Z,C,N = M*2
+//This operation shifts all the bits of the accumulator or memory contents one bit left.
+//Bit 0 is set to 0 and bit 7 is placed in the carry flag
+//The effect of this operation is to multiply the memory contents by 2
+//(ignoring 2's complement considerations), setting the carry if the result will not fit in 8 bits.
+func (cpu *CPU) ASL(addr uint16) {
+	var oval byte
+	var nval byte
+	if addr == uint16(0x000A) { //Work around to handle Accumulator addressing
+		oval = cpu.A
+		nval = oval << 1
+		cpu.A = nval
+	} else {
+		oval = cpu.ram.read(addr)
+		nval = oval << 1
+		cpu.ram.write(addr, nval)
+	}
+	if hasBit(oval, 7) {
+		cpu.P = setBit(cpu.P, 0)
+	} else {
+		cpu.P = clearBit(cpu.P, 0)
+	}
+	cpu.checkAndSetZeroFlag(nval)
+	cpu.checkAndSetNegativeFlag(nval)
+}
+
+//BCC ... Branch if carry clear (If CPU.P.carry = false)
+func (cpu *CPU) BCC(addr uint16) {
+	if hasBit(cpu.P, 0) == false {
+		displacement := uint16(cpu.ram.read(addr))
+		cpu.PC += displacement
+	}
+}
+
+//BCS ... Branch if carry set (If CPU.P.carry = true)
+func (cpu *CPU) BCS(addr uint16) {
+	if hasBit(cpu.P, 0) == true {
+		displacement := uint16(cpu.ram.read(addr))
+		cpu.PC += displacement
+	}
+}
+
+//BEQ ... Branch if equal (If CPU.P.zero = true)
+func (cpu *CPU) BEQ(addr uint16) {
+	if hasBit(cpu.P, 1) == true {
+		displacement := uint16(cpu.ram.read(addr))
+		cpu.PC += displacement
+	}
+}
+
+//BIT ... Bit Test
+func (cpu *CPU) BIT(addr uint16) {
+	val := cpu.ram.read(addr)
+	if (cpu.A & val) == 0 {
+		cpu.P = setBit(cpu.P, 1)
+	} else {
+		cpu.P = clearBit(cpu.P, 1)
+	}
+	cpu.checkAndSetOverflowFlag(val)
+	cpu.checkAndSetNegativeFlag(val)
+}
+
+//BMI ... Branch if minus
+func (cpu *CPU) BMI(addr uint16) {
+	if hasBit(cpu.P, 7) {
+		displacement := uint16(cpu.ram.read(addr))
+		cpu.PC += displacement
+	}
+}
+
+//BNE ... Branch if not equal (If CPU.P.zero = false)
+func (cpu *CPU) BNE(addr uint16) {
+	if hasBit(cpu.P, 1) == false {
+		displacement := uint16(cpu.ram.read(addr))
+		cpu.PC += displacement
+	}
+}
+
+//BPL ... Branch if positive (If CPU.P.NegativeFlag = false, advance program counter)
+func (cpu *CPU) BPL(addr uint16) {
+	if hasBit(cpu.P, 7) == false {
+		displacement := uint16(cpu.ram.read(addr))
+		cpu.PC += displacement
+	}
+}
+
+//BRK ... Force Interrupt
+//The BRK instruction forces the generation of an interrupt request.
+//The program counter and processor status are pushed on the stack then the IRQ
+//interrupt vector at $FFFE/F is loaded into the PC and the break flag in the status set to one.
+func (cpu *CPU) BRK() {
+	//TODO
+}
+
+//BVC ... Branch if Overflow Clear
+func (cpu *CPU) BVC(addr uint16) {
+	if hasBit(cpu.P, 6) == false {
+		displacement := uint16(cpu.ram.read(addr))
+		cpu.PC += displacement
+	}
+}
+
+//BVS ... Branch if Overflow Set
+func (cpu *CPU) BVS(addr uint16) {
+	if hasBit(cpu.P, 6) == true {
+		displacement := uint16(cpu.ram.read(addr))
+		cpu.PC += displacement
+	}
+}
+
 //TAX ... X = A
 func (cpu *CPU) TAX() {
 	cpu.X = cpu.A
@@ -240,18 +362,6 @@ func (cpu *CPU) TYA() {
 	cpu.checkAndSetNegativeFlag(cpu.A)
 }
 
-//BIT ... Bit Test
-func (cpu *CPU) BIT(addr uint16) {
-	val := cpu.ram.read(addr)
-	if (cpu.A & val) == 0 {
-		cpu.P = setBit(cpu.P, 1)
-	} else {
-		cpu.P = clearBit(cpu.P, 1)
-	}
-	cpu.checkAndSetOverflowFlag(val)
-	cpu.checkAndSetNegativeFlag(val)
-}
-
 //SEI ... Sets InterruptDisable flag on CPU status register
 func (cpu *CPU) SEI() {
 	cpu.P = setBit(cpu.P, 2)
@@ -260,11 +370,6 @@ func (cpu *CPU) SEI() {
 //SEC ... Set Carry Flag
 func (cpu *CPU) SEC() {
 	cpu.P = setBit(cpu.P, 0)
-}
-
-//NOP ... No Operation
-func (cpu *CPU) NOP() {
-	//
 }
 
 //SED ... Sets decimal flag
@@ -422,6 +527,35 @@ func (cpu *CPU) LDY(addr uint16) {
 	cpu.checkAndSetNegativeFlag(cpu.Y)
 }
 
+//LSR ... Logical shift right
+//A,C,Z,N = A/2 or M,C,Z,N = M/2
+//Each of the bits in A or M is shift one place to the right.
+//The bit that was in bit 0 is shifted into the carry flag. Bit 7 is set to zero
+func (cpu *CPU) LSR(addr uint16) {
+	var oval byte
+	var nval byte
+	if addr == uint16(0x000A) { //Work around to handle Accumulator addressing
+		oval = cpu.A
+		nval = oval >> 1
+		cpu.A = nval
+	} else {
+		oval = cpu.ram.read(addr)
+		nval = oval >> 1
+		cpu.ram.write(addr, nval)
+	}
+	if hasBit(oval, 0) {
+		cpu.P = setBit(cpu.P, 0)
+	} else {
+		cpu.P = clearBit(cpu.P, 0)
+	}
+	cpu.checkAndSetZeroFlag(nval)
+	cpu.checkAndSetNegativeFlag(nval)
+}
+
+//NOP ... No Operation
+func (cpu *CPU) NOP() {
+}
+
 //STA ... M = A
 func (cpu *CPU) STA(addr uint16) {
 	cpu.ram.write(addr, cpu.A)
@@ -450,6 +584,16 @@ func (cpu *CPU) JSR(addr uint16) {
 	binary.BigEndian.PutUint16(bytes, cpu.PC-1)
 	cpu.sPush(bytes...)
 	cpu.PC = addr
+}
+
+//RTI ... Return from Interrupt
+//The RTI instruction is used at the end of an interrupt processing routine.
+//It pulls the processor flags from the stack followed by the program counter.
+func (cpu *CPU) RTI() {
+	cpu.PLP() //Pull processor status from stack
+	lo := cpu.sPop()
+	hi := cpu.sPop()
+	cpu.PC = binary.LittleEndian.Uint16([]byte{lo, hi})
 }
 
 //RTS ...
@@ -486,70 +630,6 @@ func (cpu *CPU) SBC(addr uint16) {
 	}
 }
 
-//BPL ... Branch if positive (If CPU.P.NegativeFlag = false, advance program counter)
-func (cpu *CPU) BPL(addr uint16) {
-	if hasBit(cpu.P, 7) == false {
-		displacement := uint16(cpu.ram.read(addr))
-		cpu.PC += displacement
-	}
-}
-
-//BVS ... Branch if Overflow Set
-func (cpu *CPU) BVS(addr uint16) {
-	if hasBit(cpu.P, 6) == true {
-		displacement := uint16(cpu.ram.read(addr))
-		cpu.PC += displacement
-	}
-}
-
-//BVC ... Branch if Overflow Clear
-func (cpu *CPU) BVC(addr uint16) {
-	if hasBit(cpu.P, 6) == false {
-		displacement := uint16(cpu.ram.read(addr))
-		cpu.PC += displacement
-	}
-}
-
-//BMI ... Branch if minus
-func (cpu *CPU) BMI(addr uint16) {
-	if hasBit(cpu.P, 7) {
-		displacement := uint16(cpu.ram.read(addr))
-		cpu.PC += displacement
-	}
-}
-
-//BEQ ... Branch if equal (If CPU.P.zero = true)
-func (cpu *CPU) BEQ(addr uint16) {
-	if hasBit(cpu.P, 1) == true {
-		displacement := uint16(cpu.ram.read(addr))
-		cpu.PC += displacement
-	}
-}
-
-//BNE ... Branch if not equal (If CPU.P.zero = false)
-func (cpu *CPU) BNE(addr uint16) {
-	if hasBit(cpu.P, 1) == false {
-		displacement := uint16(cpu.ram.read(addr))
-		cpu.PC += displacement
-	}
-}
-
-//BCS ... Branch if carry set (If CPU.P.carry = true)
-func (cpu *CPU) BCS(addr uint16) {
-	if hasBit(cpu.P, 0) == true {
-		displacement := uint16(cpu.ram.read(addr))
-		cpu.PC += displacement
-	}
-}
-
-//BCC ... Branch if carry clear (If CPU.P.carry = false)
-func (cpu *CPU) BCC(addr uint16) {
-	if hasBit(cpu.P, 0) == false {
-		displacement := uint16(cpu.ram.read(addr))
-		cpu.PC += displacement
-	}
-}
-
 //PHA ... Push Accumulator to Stack
 func (cpu *CPU) PHA() {
 	cpu.sPush(cpu.A)
@@ -578,12 +658,72 @@ func (cpu *CPU) PLP() {
 	cpu.P = val
 }
 
-//AND ... Logical AND performed between A register and contents of Memory (A&M)
-func (cpu *CPU) AND(addr uint16) {
-	M := cpu.ram.read(addr)
-	cpu.A = (cpu.A & M)
-	cpu.checkAndSetZeroFlag(cpu.A)
-	cpu.checkAndSetNegativeFlag(cpu.A)
+//ROL ... Rotate Left
+//Move each of the bits in either A or M one place to the left.
+//Bit 0 is filled with the current value of the carry flag whilst
+//the old bit 7 becomes the new carry flag value.
+//TODO: THIS IS SUPER UGLY. FIX WITH PROPER BITSHIFTING EH?
+func (cpu *CPU) ROL(addr uint16) {
+	var oval byte
+	var nval byte
+	if addr == uint16(0x000A) {
+		oval = cpu.A
+		nval = oval << 1
+		nval = clearBit(nval, 0)
+		if hasBit(cpu.P, 0) {
+			nval = setBit(nval, 0)
+		}
+		cpu.A = nval
+	} else {
+		oval = cpu.ram.read(addr)
+		nval = oval << 1
+		nval = clearBit(nval, 0)
+		if hasBit(cpu.P, 0) {
+			nval = setBit(nval, 0)
+		}
+		cpu.ram.write(addr, nval)
+	}
+	if hasBit(oval, 7) {
+		cpu.P = setBit(cpu.P, 0)
+	} else {
+		cpu.P = clearBit(cpu.P, 0)
+	}
+	cpu.checkAndSetNegativeFlag(nval)
+	cpu.checkAndSetZeroFlag(nval)
+}
+
+//ROR ... Rotate Right
+//Move each of the bits in either A or M one place to the right.
+//Bit 7 is filled with the current value of the carry flag whilst
+//the old bit 0 becomes the new carry flag value.
+//TODO: THIS IS SUPER UGLY. FIX WITH PROPER BITSHIFTING EH?
+func (cpu *CPU) ROR(addr uint16) {
+	var oval byte
+	var nval byte
+	if addr == uint16(0x000A) {
+		oval = cpu.A
+		nval = oval >> 1
+		nval = clearBit(nval, 7)
+		if hasBit(cpu.P, 0) {
+			nval = setBit(nval, 7)
+		}
+		cpu.A = nval
+	} else {
+		oval = cpu.ram.read(addr)
+		nval = oval >> 1
+		nval = clearBit(nval, 7)
+		if hasBit(cpu.P, 0) {
+			nval = setBit(nval, 7)
+		}
+		cpu.ram.write(addr, nval)
+	}
+	if hasBit(oval, 0) {
+		cpu.P = setBit(cpu.P, 0)
+	} else {
+		cpu.P = clearBit(cpu.P, 0)
+	}
+	cpu.checkAndSetNegativeFlag(nval)
+	cpu.checkAndSetZeroFlag(nval)
 }
 
 //ORA ... Inclusive OR is performed between A register and contents of Memory (A|M)
