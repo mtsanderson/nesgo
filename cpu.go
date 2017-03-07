@@ -123,6 +123,28 @@ func (cpu *CPU) relativeAddress() uint16 {
 	return cpu.PC
 }
 
+func (cpu *CPU) indexedIndirectAddress() uint16 {
+	indirectLo := (cpu.ram.read(cpu.immediateAddress()) + cpu.X)
+	indirectHi := byte(0x00)
+	indirectAddr := binary.LittleEndian.Uint16([]byte{indirectLo, indirectHi})
+	lo := indirectAddr
+	if lo > 0xFF { // try to detect wrap around?
+		lo = (lo - 0xFF)
+	}
+	hi := lo + 1
+	if hi > 0xFF { // try to detect wrap around?
+		hi = hi - (0xFF + 1)
+	}
+	addr := binary.LittleEndian.Uint16([]byte{cpu.ram.read(lo), cpu.ram.read(hi)})
+	return addr
+}
+
+/*
+func indirectIndexedAddress() uint16 {
+
+}
+*/
+
 /*
 ===============================================================================
 				Stack Operators
