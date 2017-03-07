@@ -56,6 +56,63 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 4,
 		execute:   func() { cpu.ADC(cpu.absoluteYAddress()) }}
 
+	cpu.Instructions[0x61] = Instruction{
+		Name:      "ADC",
+		opcode:    0x61,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.ADC(cpu.indexedIndirectAddress()) }}
+
+	//AND
+	cpu.Instructions[0x29] = Instruction{
+		Name:      "AND",
+		opcode:    0x29,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.AND(cpu.immediateAddress()) }}
+
+	cpu.Instructions[0x25] = Instruction{
+		Name:      "AND",
+		opcode:    0x25,
+		size:      2,
+		numCycles: 3,
+		execute:   func() { cpu.AND(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0x35] = Instruction{
+		Name:      "AND",
+		opcode:    0x35,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.AND(cpu.zeroPageXAddress()) }}
+
+	cpu.Instructions[0x2D] = Instruction{
+		Name:      "AND",
+		opcode:    0x2D,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.AND(cpu.absoluteAddress()) }}
+
+	cpu.Instructions[0x3D] = Instruction{
+		Name:      "AND",
+		opcode:    0x3D,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.AND(cpu.absoluteXAddress()) }}
+
+	cpu.Instructions[0x39] = Instruction{
+		Name:      "AND",
+		opcode:    0x39,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.AND(cpu.absoluteYAddress()) }}
+
+	cpu.Instructions[0x21] = Instruction{
+		Name:      "AND",
+		opcode:    0x21,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.AND(cpu.indexedIndirectAddress()) }}
+
 	//ASL
 	cpu.Instructions[0x0A] = Instruction{
 		Name:      "ASL",
@@ -92,6 +149,360 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 7,
 		execute:   func() { cpu.ASL(cpu.absoluteXAddress()) }}
 
+	//BCC
+	cpu.Instructions[0x90] = Instruction{
+		Name:      "BCC",
+		opcode:    0x90,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.BCC(cpu.immediateAddress()) }}
+
+	//BCS
+	cpu.Instructions[0xB0] = Instruction{
+		Name:      "BCS",
+		opcode:    0xB0,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.BCS(cpu.immediateAddress()) }}
+
+	//BEQ
+	cpu.Instructions[0xF0] = Instruction{
+		Name:      "BEQ",
+		opcode:    0xF0,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.BEQ(cpu.immediateAddress()) }}
+
+	//BIT
+	cpu.Instructions[0x24] = Instruction{
+		Name:      "BIT",
+		opcode:    0x24,
+		size:      2,
+		numCycles: 3,
+		execute:   func() { cpu.BIT(cpu.zeroPageAddress()) }}
+
+	//BIT
+	cpu.Instructions[0x2C] = Instruction{
+		Name:      "BIT",
+		opcode:    0x2C,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.BIT(cpu.absoluteAddress()) }}
+
+	//BMI
+	cpu.Instructions[0x30] = Instruction{
+		Name:      "BMI",
+		opcode:    0x30,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.BMI(cpu.immediateAddress()) }}
+
+	//BNE
+	cpu.Instructions[0xD0] = Instruction{
+		Name:      "BNE",
+		opcode:    0xD0,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.BNE(cpu.immediateAddress()) }}
+
+	//BPL
+	cpu.Instructions[0x10] = Instruction{
+		Name:      "BPL",
+		opcode:    0x10,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.BPL(cpu.immediateAddress()) }}
+
+	//BRK
+	cpu.Instructions[0x00] = Instruction{
+		Name:      "BRK",
+		opcode:    0x00,
+		size:      1,
+		numCycles: 7,
+		execute:   func() { cpu.BRK() }}
+
+	//BVC
+	cpu.Instructions[0x50] = Instruction{
+		Name:      "BVC",
+		opcode:    0x50,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.BVC(cpu.immediateAddress()) }}
+
+	//BVS
+	cpu.Instructions[0x70] = Instruction{
+		Name:      "BVS",
+		opcode:    0x70,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.BVS(cpu.immediateAddress()) }}
+
+	//CLC
+	cpu.Instructions[0x18] = Instruction{
+		Name:      "CLC",
+		opcode:    0x18,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.CLC() }}
+
+	//CLD
+	cpu.Instructions[0xD8] = Instruction{
+		Name:      "CLD",
+		opcode:    0xD8,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.CLD() }}
+
+	//CLI
+	cpu.Instructions[0x58] = Instruction{
+		Name:      "CLD",
+		opcode:    0x58,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.CLI() }}
+
+	//CLV
+	cpu.Instructions[0xB8] = Instruction{
+		Name:      "CLV",
+		opcode:    0xB8,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.CLV() }}
+
+	//CMP
+	cpu.Instructions[0xC9] = Instruction{
+		Name:      "CMP",
+		opcode:    0xC9,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.CMP(cpu.immediateAddress()) }}
+
+	cpu.Instructions[0xC5] = Instruction{
+		Name:      "CMP",
+		opcode:    0xC5,
+		size:      2,
+		numCycles: 3,
+		execute:   func() { cpu.CMP(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0xD5] = Instruction{
+		Name:      "CMP",
+		opcode:    0xD5,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.CMP(cpu.zeroPageXAddress()) }}
+
+	cpu.Instructions[0xCD] = Instruction{
+		Name:      "CMP",
+		opcode:    0xCD,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.CMP(cpu.absoluteAddress()) }}
+
+	cpu.Instructions[0xDD] = Instruction{
+		Name:      "CMP",
+		opcode:    0xDD,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.CMP(cpu.absoluteXAddress()) }}
+
+	cpu.Instructions[0xD9] = Instruction{
+		Name:      "CMP",
+		opcode:    0xD9,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.CMP(cpu.absoluteYAddress()) }}
+
+	cpu.Instructions[0xC1] = Instruction{
+		Name:      "CMP",
+		opcode:    0xC1,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.CMP(cpu.indexedIndirectAddress()) }}
+
+	//CPX
+	cpu.Instructions[0xE0] = Instruction{
+		Name:      "CPX",
+		opcode:    0xE0,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.CPX(cpu.immediateAddress()) }}
+
+	cpu.Instructions[0xE4] = Instruction{
+		Name:      "CPX",
+		opcode:    0xE4,
+		size:      2,
+		numCycles: 3,
+		execute:   func() { cpu.CPX(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0xEC] = Instruction{
+		Name:      "CPX",
+		opcode:    0xEC,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.CPX(cpu.absoluteAddress()) }}
+
+	//CPY
+	cpu.Instructions[0xC0] = Instruction{
+		Name:      "CPY",
+		opcode:    0xC0,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.CPY(cpu.immediateAddress()) }}
+
+	cpu.Instructions[0xC4] = Instruction{
+		Name:      "CPY",
+		opcode:    0xC4,
+		size:      2,
+		numCycles: 3,
+		execute:   func() { cpu.CPY(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0xCC] = Instruction{
+		Name:      "CPY",
+		opcode:    0xCC,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.CPY(cpu.absoluteAddress()) }}
+
+	//DEC
+	cpu.Instructions[0xC6] = Instruction{
+		Name:      "DEC",
+		opcode:    0xC6,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.DEC(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0xD6] = Instruction{
+		Name:      "DEC",
+		opcode:    0xD6,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.DEC(cpu.zeroPageXAddress()) }}
+
+	cpu.Instructions[0xCE] = Instruction{
+		Name:      "DEC",
+		opcode:    0xCE,
+		size:      3,
+		numCycles: 6,
+		execute:   func() { cpu.DEC(cpu.absoluteAddress()) }}
+
+	cpu.Instructions[0xDE] = Instruction{
+		Name:      "DEC",
+		opcode:    0xDE,
+		size:      3,
+		numCycles: 7,
+		execute:   func() { cpu.DEC(cpu.absoluteXAddress()) }}
+
+	//DEX
+	cpu.Instructions[0xCA] = Instruction{
+		Name:      "DEX",
+		opcode:    0xCA,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.DEX() }}
+
+	//DEY
+	cpu.Instructions[0x88] = Instruction{
+		Name:      "DEY",
+		opcode:    0x88,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.DEY() }}
+
+	//EOR
+	cpu.Instructions[0x49] = Instruction{
+		Name:      "EOR",
+		opcode:    0x49,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.EOR(cpu.immediateAddress()) }}
+
+	cpu.Instructions[0x45] = Instruction{
+		Name:      "EOR",
+		opcode:    0x45,
+		size:      2,
+		numCycles: 3,
+		execute:   func() { cpu.EOR(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0x55] = Instruction{
+		Name:      "EOR",
+		opcode:    0x55,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.EOR(cpu.zeroPageXAddress()) }}
+
+	cpu.Instructions[0x4D] = Instruction{
+		Name:      "EOR",
+		opcode:    0x4D,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.EOR(cpu.absoluteAddress()) }}
+
+	cpu.Instructions[0x5D] = Instruction{
+		Name:      "EOR",
+		opcode:    0x5D,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.EOR(cpu.absoluteXAddress()) }}
+
+	cpu.Instructions[0x59] = Instruction{
+		Name:      "EOR",
+		opcode:    0x59,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.EOR(cpu.absoluteYAddress()) }}
+
+	cpu.Instructions[0x41] = Instruction{
+		Name:      "EOR",
+		opcode:    0x41,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.EOR(cpu.indexedIndirectAddress()) }}
+
+	//INC
+	cpu.Instructions[0xE6] = Instruction{
+		Name:      "INC",
+		opcode:    0xE6,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.INC(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0xF6] = Instruction{
+		Name:      "INC",
+		opcode:    0xF6,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.INC(cpu.zeroPageXAddress()) }}
+
+	cpu.Instructions[0xEE] = Instruction{
+		Name:      "INC",
+		opcode:    0xEE,
+		size:      3,
+		numCycles: 6,
+		execute:   func() { cpu.INC(cpu.absoluteAddress()) }}
+
+	cpu.Instructions[0xFE] = Instruction{
+		Name:      "INC",
+		opcode:    0xFE,
+		size:      3,
+		numCycles: 7,
+		execute:   func() { cpu.INC(cpu.absoluteXAddress()) }}
+
+	//INX
+	cpu.Instructions[0xE8] = Instruction{
+		Name:      "DEX",
+		opcode:    0xE8,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.INX() }}
+
+	//INY
+	cpu.Instructions[0xC8] = Instruction{
+		Name:      "DEY",
+		opcode:    0xC8,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.INY() }}
+
 	//JMP
 	cpu.Instructions[0x4C] = Instruction{
 		Name:      "JMP",
@@ -100,50 +511,6 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 3,
 		execute:   func() { cpu.JMP(cpu.absoluteAddress()) }}
 
-	//SEI
-	cpu.Instructions[0x78] = Instruction{
-		Name:      "SEI",
-		opcode:    0x78,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.SEI() }}
-
-	//STA
-	cpu.Instructions[0x85] = Instruction{
-		Name:      "STA",
-		opcode:    0x85,
-		size:      2,
-		numCycles: 3,
-		execute:   func() { cpu.STA(cpu.zeroPageAddress()) }}
-
-	cpu.Instructions[0x95] = Instruction{
-		Name:      "STA",
-		opcode:    0x95,
-		size:      2,
-		numCycles: 4,
-		execute:   func() { cpu.STA(cpu.zeroPageXAddress()) }}
-
-	cpu.Instructions[0x8D] = Instruction{
-		Name:      "STA",
-		opcode:    0x8D,
-		size:      3,
-		numCycles: 4,
-		execute:   func() { cpu.STA(cpu.absoluteAddress()) }}
-
-	cpu.Instructions[0x9D] = Instruction{
-		Name:      "STA",
-		opcode:    0x9D,
-		size:      3,
-		numCycles: 5,
-		execute:   func() { cpu.STA(cpu.absoluteXAddress()) }}
-
-	cpu.Instructions[0x99] = Instruction{
-		Name:      "STA",
-		opcode:    0x99,
-		size:      3,
-		numCycles: 5,
-		execute:   func() { cpu.STA(cpu.absoluteYAddress()) }}
-
 	//JSR
 	cpu.Instructions[0x20] = Instruction{
 		Name:      "JSR",
@@ -151,50 +518,6 @@ func (cpu *CPU) loadInstructions() {
 		size:      3,
 		numCycles: 6,
 		execute:   func() { cpu.JSR(cpu.absoluteAddress()) }}
-
-	//STX
-	cpu.Instructions[0x86] = Instruction{
-		Name:      "STX",
-		opcode:    0x86,
-		size:      2,
-		numCycles: 3,
-		execute:   func() { cpu.STX(cpu.zeroPageAddress()) }}
-
-	cpu.Instructions[0x96] = Instruction{
-		Name:      "STX",
-		opcode:    0x96,
-		size:      2,
-		numCycles: 4,
-		execute:   func() { cpu.STX(cpu.zeroPageYAddress()) }}
-
-	cpu.Instructions[0x8E] = Instruction{
-		Name:      "STX",
-		opcode:    0x8E,
-		size:      3,
-		numCycles: 4,
-		execute:   func() { cpu.STX(cpu.absoluteAddress()) }}
-
-	//STY
-	cpu.Instructions[0x84] = Instruction{
-		Name:      "STY",
-		opcode:    0x84,
-		size:      2,
-		numCycles: 3,
-		execute:   func() { cpu.STY(cpu.zeroPageAddress()) }}
-
-	cpu.Instructions[0x94] = Instruction{
-		Name:      "STY",
-		opcode:    0x94,
-		size:      2,
-		numCycles: 4,
-		execute:   func() { cpu.STY(cpu.zeroPageYAddress()) }}
-
-	cpu.Instructions[0x8C] = Instruction{
-		Name:      "STY",
-		opcode:    0x8C,
-		size:      3,
-		numCycles: 4,
-		execute:   func() { cpu.STY(cpu.absoluteAddress()) }}
 
 	//LDA
 	cpu.Instructions[0xA9] = Instruction{
@@ -362,189 +685,55 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 2,
 		execute:   func() { cpu.NOP() }}
 
-	//SEC
-	cpu.Instructions[0x38] = Instruction{
-		Name:      "SEC",
-		opcode:    0x38,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.SEC() }}
-
-	//CLC
-	cpu.Instructions[0x18] = Instruction{
-		Name:      "CLC",
-		opcode:    0x18,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.CLC() }}
-
-	//CLV
-	cpu.Instructions[0xB8] = Instruction{
-		Name:      "CLV",
-		opcode:    0xB8,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.CLV() }}
-
-	//BCS
-	cpu.Instructions[0xB0] = Instruction{
-		Name:      "BCS",
-		opcode:    0xB0,
+	//ORA
+	cpu.Instructions[0x09] = Instruction{
+		Name:      "ORA",
+		opcode:    0x09,
 		size:      2,
 		numCycles: 2,
-		execute:   func() { cpu.BCS(cpu.immediateAddress()) }}
+		execute:   func() { cpu.ORA(cpu.immediateAddress()) }}
 
-	//BCC
-	cpu.Instructions[0x90] = Instruction{
-		Name:      "BCC",
-		opcode:    0x90,
-		size:      2,
-		numCycles: 2,
-		execute:   func() { cpu.BCC(cpu.immediateAddress()) }}
-
-	//BEQ
-	cpu.Instructions[0xF0] = Instruction{
-		Name:      "BEQ",
-		opcode:    0xF0,
-		size:      2,
-		numCycles: 2,
-		execute:   func() { cpu.BEQ(cpu.immediateAddress()) }}
-
-	//BNE
-	cpu.Instructions[0xD0] = Instruction{
-		Name:      "BNE",
-		opcode:    0xD0,
-		size:      2,
-		numCycles: 2,
-		execute:   func() { cpu.BNE(cpu.immediateAddress()) }}
-
-	//BPL
-	cpu.Instructions[0x10] = Instruction{
-		Name:      "BPL",
-		opcode:    0x10,
-		size:      2,
-		numCycles: 2,
-		execute:   func() { cpu.BPL(cpu.immediateAddress()) }}
-
-	//BVS
-	cpu.Instructions[0x70] = Instruction{
-		Name:      "BVS",
-		opcode:    0x70,
-		size:      2,
-		numCycles: 2,
-		execute:   func() { cpu.BVS(cpu.immediateAddress()) }}
-
-	//BVC
-	cpu.Instructions[0x50] = Instruction{
-		Name:      "BVC",
-		opcode:    0x50,
-		size:      2,
-		numCycles: 2,
-		execute:   func() { cpu.BVC(cpu.immediateAddress()) }}
-
-	//BMI
-	cpu.Instructions[0x30] = Instruction{
-		Name:      "BMI",
-		opcode:    0x30,
-		size:      2,
-		numCycles: 2,
-		execute:   func() { cpu.BMI(cpu.immediateAddress()) }}
-
-	//SEI
-	cpu.Instructions[0x78] = Instruction{
-		Name:      "SEI",
-		opcode:    0x78,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.SEI() }}
-
-	//CLD
-	cpu.Instructions[0xD8] = Instruction{
-		Name:      "CLD",
-		opcode:    0xD8,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.CLD() }}
-
-	//SED
-	cpu.Instructions[0xF8] = Instruction{
-		Name:      "SED",
-		opcode:    0xF8,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.SED() }}
-
-	//TAX
-	cpu.Instructions[0xAA] = Instruction{
-		Name:      "TAX",
-		opcode:    0xAA,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.TAX() }}
-
-	//TAY
-	cpu.Instructions[0xA8] = Instruction{
-		Name:      "TAY",
-		opcode:    0xA8,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.TAY() }}
-
-	//TSX
-	cpu.Instructions[0xBA] = Instruction{
-		Name:      "TSX",
-		opcode:    0xBA,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.TSX() }}
-
-	//TXA
-	cpu.Instructions[0x8A] = Instruction{
-		Name:      "TXA",
-		opcode:    0x8A,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.TXA() }}
-
-	//TXS
-	cpu.Instructions[0x9A] = Instruction{
-		Name:      "TXS",
-		opcode:    0x9A,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.TXS() }}
-
-	//TYA
-	cpu.Instructions[0x98] = Instruction{
-		Name:      "TYA",
-		opcode:    0x98,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.TYA() }}
-
-	//BIT
-	cpu.Instructions[0x24] = Instruction{
-		Name:      "BIT",
-		opcode:    0x24,
+	cpu.Instructions[0x05] = Instruction{
+		Name:      "ORA",
+		opcode:    0x05,
 		size:      2,
 		numCycles: 3,
-		execute:   func() { cpu.BIT(cpu.zeroPageAddress()) }}
+		execute:   func() { cpu.ORA(cpu.zeroPageAddress()) }}
 
-	//BIT
-	cpu.Instructions[0x2C] = Instruction{
-		Name:      "BIT",
-		opcode:    0x2C,
+	cpu.Instructions[0x15] = Instruction{
+		Name:      "ORA",
+		opcode:    0x15,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.ORA(cpu.zeroPageXAddress()) }}
+
+	cpu.Instructions[0x0D] = Instruction{
+		Name:      "ORA",
+		opcode:    0x0D,
 		size:      3,
 		numCycles: 4,
-		execute:   func() { cpu.BIT(cpu.absoluteAddress()) }}
+		execute:   func() { cpu.ORA(cpu.absoluteAddress()) }}
 
-	//PHP
-	cpu.Instructions[0x08] = Instruction{
-		Name:      "PHP",
-		opcode:    0x08,
-		size:      1,
-		numCycles: 3,
-		execute:   func() { cpu.PHP() }}
+	cpu.Instructions[0x1D] = Instruction{
+		Name:      "ORA",
+		opcode:    0x1D,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.ORA(cpu.absoluteXAddress()) }}
+
+	cpu.Instructions[0x19] = Instruction{
+		Name:      "ORA",
+		opcode:    0x19,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.ORA(cpu.absoluteYAddress()) }}
+
+	cpu.Instructions[0x01] = Instruction{
+		Name:      "ORA",
+		opcode:    0x01,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.ORA(cpu.indexedIndirectAddress()) }}
 
 	//PHA
 	cpu.Instructions[0x48] = Instruction{
@@ -553,6 +742,14 @@ func (cpu *CPU) loadInstructions() {
 		size:      1,
 		numCycles: 3,
 		execute:   func() { cpu.PHA() }}
+
+	//PHP
+	cpu.Instructions[0x08] = Instruction{
+		Name:      "PHP",
+		opcode:    0x08,
+		size:      1,
+		numCycles: 3,
+		execute:   func() { cpu.PHP() }}
 
 	//PLA
 	cpu.Instructions[0x68] = Instruction{
@@ -642,328 +839,6 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 7,
 		execute:   func() { cpu.ROR(cpu.absoluteXAddress()) }}
 
-	//AND
-	cpu.Instructions[0x29] = Instruction{
-		Name:      "AND",
-		opcode:    0x29,
-		size:      2,
-		numCycles: 2,
-		execute:   func() { cpu.AND(cpu.immediateAddress()) }}
-
-	cpu.Instructions[0x25] = Instruction{
-		Name:      "AND",
-		opcode:    0x25,
-		size:      2,
-		numCycles: 3,
-		execute:   func() { cpu.AND(cpu.zeroPageAddress()) }}
-
-	cpu.Instructions[0x35] = Instruction{
-		Name:      "AND",
-		opcode:    0x35,
-		size:      2,
-		numCycles: 4,
-		execute:   func() { cpu.AND(cpu.zeroPageXAddress()) }}
-
-	/*
-		cpu.Instructions[0x28] = Instruction{
-			Name:      "AND",
-			opcode:    0x28,
-			size:      1,
-			numCycles: 4,
-			execute:   func() { cpu.AND() }}
-
-		cpu.Instructions[0x28] = Instruction{
-			Name:      "AND",
-			opcode:    0x28,
-			size:      1,
-			numCycles: 4,
-			execute:   func() { cpu.AND() }}
-
-		cpu.Instructions[0x28] = Instruction{
-			Name:      "AND",
-			opcode:    0x28,
-			size:      1,
-			numCycles: 4,
-			execute:   func() { cpu.AND() }}
-
-		cpu.Instructions[0x28] = Instruction{
-			Name:      "AND",
-			opcode:    0x28,
-			size:      1,
-			numCycles: 4,
-			execute:   func() { cpu.AND() }}
-
-		cpu.Instructions[0x28] = Instruction{
-			Name:      "AND",
-			opcode:    0x28,
-			size:      1,
-			numCycles: 4,
-			execute:   func() { cpu.AND() }}
-	*/
-
-	//ORA
-	cpu.Instructions[0x09] = Instruction{
-		Name:      "ORA",
-		opcode:    0x09,
-		size:      2,
-		numCycles: 2,
-		execute:   func() { cpu.ORA(cpu.immediateAddress()) }}
-
-	cpu.Instructions[0x05] = Instruction{
-		Name:      "ORA",
-		opcode:    0x05,
-		size:      2,
-		numCycles: 3,
-		execute:   func() { cpu.ORA(cpu.zeroPageAddress()) }}
-
-	cpu.Instructions[0x15] = Instruction{
-		Name:      "ORA",
-		opcode:    0x15,
-		size:      2,
-		numCycles: 4,
-		execute:   func() { cpu.ORA(cpu.zeroPageXAddress()) }}
-
-	cpu.Instructions[0x0D] = Instruction{
-		Name:      "ORA",
-		opcode:    0x0D,
-		size:      3,
-		numCycles: 4,
-		execute:   func() { cpu.ORA(cpu.absoluteAddress()) }}
-
-	cpu.Instructions[0x1D] = Instruction{
-		Name:      "ORA",
-		opcode:    0x1D,
-		size:      3,
-		numCycles: 4,
-		execute:   func() { cpu.ORA(cpu.absoluteXAddress()) }}
-
-	cpu.Instructions[0x19] = Instruction{
-		Name:      "ORA",
-		opcode:    0x19,
-		size:      3,
-		numCycles: 4,
-		execute:   func() { cpu.ORA(cpu.absoluteYAddress()) }}
-
-	//CMP
-	cpu.Instructions[0xC9] = Instruction{
-		Name:      "CMP",
-		opcode:    0xC9,
-		size:      2,
-		numCycles: 2,
-		execute:   func() { cpu.CMP(cpu.immediateAddress()) }}
-
-	cpu.Instructions[0xC5] = Instruction{
-		Name:      "CMP",
-		opcode:    0xC5,
-		size:      2,
-		numCycles: 3,
-		execute:   func() { cpu.CMP(cpu.zeroPageAddress()) }}
-
-	cpu.Instructions[0xD5] = Instruction{
-		Name:      "CMP",
-		opcode:    0xD5,
-		size:      2,
-		numCycles: 4,
-		execute:   func() { cpu.CMP(cpu.zeroPageXAddress()) }}
-
-	cpu.Instructions[0xCD] = Instruction{
-		Name:      "CMP",
-		opcode:    0xCD,
-		size:      3,
-		numCycles: 4,
-		execute:   func() { cpu.CMP(cpu.absoluteAddress()) }}
-
-	cpu.Instructions[0xDD] = Instruction{
-		Name:      "CMP",
-		opcode:    0xDD,
-		size:      3,
-		numCycles: 4,
-		execute:   func() { cpu.CMP(cpu.absoluteXAddress()) }}
-
-	cpu.Instructions[0xD9] = Instruction{
-		Name:      "CMP",
-		opcode:    0xD9,
-		size:      3,
-		numCycles: 4,
-		execute:   func() { cpu.CMP(cpu.absoluteYAddress()) }}
-
-	//CPX
-	cpu.Instructions[0xE0] = Instruction{
-		Name:      "CPX",
-		opcode:    0xE0,
-		size:      2,
-		numCycles: 2,
-		execute:   func() { cpu.CPX(cpu.immediateAddress()) }}
-
-	cpu.Instructions[0xE4] = Instruction{
-		Name:      "CPX",
-		opcode:    0xE4,
-		size:      2,
-		numCycles: 3,
-		execute:   func() { cpu.CPX(cpu.zeroPageAddress()) }}
-
-	cpu.Instructions[0xEC] = Instruction{
-		Name:      "CPX",
-		opcode:    0xEC,
-		size:      3,
-		numCycles: 4,
-		execute:   func() { cpu.CPX(cpu.absoluteAddress()) }}
-
-	//CPY
-	cpu.Instructions[0xC0] = Instruction{
-		Name:      "CPY",
-		opcode:    0xC0,
-		size:      2,
-		numCycles: 2,
-		execute:   func() { cpu.CPY(cpu.immediateAddress()) }}
-
-	cpu.Instructions[0xC4] = Instruction{
-		Name:      "CPY",
-		opcode:    0xC4,
-		size:      2,
-		numCycles: 3,
-		execute:   func() { cpu.CPY(cpu.zeroPageAddress()) }}
-
-	cpu.Instructions[0xCC] = Instruction{
-		Name:      "CPY",
-		opcode:    0xCC,
-		size:      3,
-		numCycles: 4,
-		execute:   func() { cpu.CPY(cpu.absoluteAddress()) }}
-
-	//DEC
-	cpu.Instructions[0xC6] = Instruction{
-		Name:      "DEC",
-		opcode:    0xC6,
-		size:      2,
-		numCycles: 5,
-		execute:   func() { cpu.DEC(cpu.zeroPageAddress()) }}
-
-	cpu.Instructions[0xD6] = Instruction{
-		Name:      "DEC",
-		opcode:    0xD6,
-		size:      2,
-		numCycles: 6,
-		execute:   func() { cpu.DEC(cpu.zeroPageXAddress()) }}
-
-	cpu.Instructions[0xCE] = Instruction{
-		Name:      "DEC",
-		opcode:    0xCE,
-		size:      3,
-		numCycles: 6,
-		execute:   func() { cpu.DEC(cpu.absoluteAddress()) }}
-
-	cpu.Instructions[0xDE] = Instruction{
-		Name:      "DEC",
-		opcode:    0xDE,
-		size:      3,
-		numCycles: 7,
-		execute:   func() { cpu.DEC(cpu.absoluteXAddress()) }}
-
-	//DEX
-	cpu.Instructions[0xCA] = Instruction{
-		Name:      "DEX",
-		opcode:    0xCA,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.DEX() }}
-
-	//DEY
-	cpu.Instructions[0x88] = Instruction{
-		Name:      "DEY",
-		opcode:    0x88,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.DEY() }}
-
-	//EOR
-	cpu.Instructions[0x49] = Instruction{
-		Name:      "EOR",
-		opcode:    0x49,
-		size:      2,
-		numCycles: 2,
-		execute:   func() { cpu.EOR(cpu.immediateAddress()) }}
-
-	cpu.Instructions[0x45] = Instruction{
-		Name:      "EOR",
-		opcode:    0x45,
-		size:      2,
-		numCycles: 3,
-		execute:   func() { cpu.EOR(cpu.zeroPageAddress()) }}
-
-	cpu.Instructions[0x55] = Instruction{
-		Name:      "EOR",
-		opcode:    0x55,
-		size:      2,
-		numCycles: 4,
-		execute:   func() { cpu.EOR(cpu.zeroPageXAddress()) }}
-
-	cpu.Instructions[0x4D] = Instruction{
-		Name:      "EOR",
-		opcode:    0x4D,
-		size:      3,
-		numCycles: 4,
-		execute:   func() { cpu.EOR(cpu.absoluteAddress()) }}
-
-	cpu.Instructions[0x5D] = Instruction{
-		Name:      "EOR",
-		opcode:    0x5D,
-		size:      3,
-		numCycles: 4,
-		execute:   func() { cpu.EOR(cpu.absoluteXAddress()) }}
-
-	cpu.Instructions[0x59] = Instruction{
-		Name:      "EOR",
-		opcode:    0x59,
-		size:      3,
-		numCycles: 4,
-		execute:   func() { cpu.EOR(cpu.absoluteYAddress()) }}
-
-	//INC
-	cpu.Instructions[0xE6] = Instruction{
-		Name:      "INC",
-		opcode:    0xE6,
-		size:      2,
-		numCycles: 5,
-		execute:   func() { cpu.INC(cpu.zeroPageAddress()) }}
-
-	cpu.Instructions[0xF6] = Instruction{
-		Name:      "INC",
-		opcode:    0xF6,
-		size:      2,
-		numCycles: 6,
-		execute:   func() { cpu.INC(cpu.zeroPageXAddress()) }}
-
-	cpu.Instructions[0xEE] = Instruction{
-		Name:      "INC",
-		opcode:    0xEE,
-		size:      3,
-		numCycles: 6,
-		execute:   func() { cpu.INC(cpu.absoluteAddress()) }}
-
-	cpu.Instructions[0xFE] = Instruction{
-		Name:      "INC",
-		opcode:    0xFE,
-		size:      3,
-		numCycles: 7,
-		execute:   func() { cpu.INC(cpu.absoluteXAddress()) }}
-
-	//INX
-	cpu.Instructions[0xE8] = Instruction{
-		Name:      "DEX",
-		opcode:    0xE8,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.INX() }}
-
-	//INY
-	cpu.Instructions[0xC8] = Instruction{
-		Name:      "DEY",
-		opcode:    0xC8,
-		size:      1,
-		numCycles: 2,
-		execute:   func() { cpu.INY() }}
-
 	//RTI
 	cpu.Instructions[0x40] = Instruction{
 		Name:      "RTI",
@@ -1022,5 +897,171 @@ func (cpu *CPU) loadInstructions() {
 		size:      3,
 		numCycles: 4,
 		execute:   func() { cpu.SBC(cpu.absoluteYAddress()) }}
+
+	cpu.Instructions[0xE1] = Instruction{
+		Name:      "SBC",
+		opcode:    0xE1,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.SBC(cpu.indexedIndirectAddress()) }}
+
+	//SEC
+	cpu.Instructions[0x38] = Instruction{
+		Name:      "SEC",
+		opcode:    0x38,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.SEC() }}
+
+	//SED
+	cpu.Instructions[0xF8] = Instruction{
+		Name:      "SED",
+		opcode:    0xF8,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.SED() }}
+
+	//SEI
+	cpu.Instructions[0x78] = Instruction{
+		Name:      "SEI",
+		opcode:    0x78,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.SEI() }}
+
+	//STA
+	cpu.Instructions[0x85] = Instruction{
+		Name:      "STA",
+		opcode:    0x85,
+		size:      2,
+		numCycles: 3,
+		execute:   func() { cpu.STA(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0x95] = Instruction{
+		Name:      "STA",
+		opcode:    0x95,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.STA(cpu.zeroPageXAddress()) }}
+
+	cpu.Instructions[0x8D] = Instruction{
+		Name:      "STA",
+		opcode:    0x8D,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.STA(cpu.absoluteAddress()) }}
+
+	cpu.Instructions[0x9D] = Instruction{
+		Name:      "STA",
+		opcode:    0x9D,
+		size:      3,
+		numCycles: 5,
+		execute:   func() { cpu.STA(cpu.absoluteXAddress()) }}
+
+	cpu.Instructions[0x99] = Instruction{
+		Name:      "STA",
+		opcode:    0x99,
+		size:      3,
+		numCycles: 5,
+		execute:   func() { cpu.STA(cpu.absoluteYAddress()) }}
+
+	cpu.Instructions[0x81] = Instruction{
+		Name:      "STA",
+		opcode:    0x81,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.STA(cpu.indexedIndirectAddress()) }}
+
+	//STX
+	cpu.Instructions[0x86] = Instruction{
+		Name:      "STX",
+		opcode:    0x86,
+		size:      2,
+		numCycles: 3,
+		execute:   func() { cpu.STX(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0x96] = Instruction{
+		Name:      "STX",
+		opcode:    0x96,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.STX(cpu.zeroPageYAddress()) }}
+
+	cpu.Instructions[0x8E] = Instruction{
+		Name:      "STX",
+		opcode:    0x8E,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.STX(cpu.absoluteAddress()) }}
+
+	//STY
+	cpu.Instructions[0x84] = Instruction{
+		Name:      "STY",
+		opcode:    0x84,
+		size:      2,
+		numCycles: 3,
+		execute:   func() { cpu.STY(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0x94] = Instruction{
+		Name:      "STY",
+		opcode:    0x94,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.STY(cpu.zeroPageYAddress()) }}
+
+	cpu.Instructions[0x8C] = Instruction{
+		Name:      "STY",
+		opcode:    0x8C,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.STY(cpu.absoluteAddress()) }}
+
+	//TAX
+	cpu.Instructions[0xAA] = Instruction{
+		Name:      "TAX",
+		opcode:    0xAA,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.TAX() }}
+
+	//TAY
+	cpu.Instructions[0xA8] = Instruction{
+		Name:      "TAY",
+		opcode:    0xA8,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.TAY() }}
+
+	//TSX
+	cpu.Instructions[0xBA] = Instruction{
+		Name:      "TSX",
+		opcode:    0xBA,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.TSX() }}
+
+	//TXA
+	cpu.Instructions[0x8A] = Instruction{
+		Name:      "TXA",
+		opcode:    0x8A,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.TXA() }}
+
+	//TXS
+	cpu.Instructions[0x9A] = Instruction{
+		Name:      "TXS",
+		opcode:    0x9A,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.TXS() }}
+
+	//TYA
+	cpu.Instructions[0x98] = Instruction{
+		Name:      "TYA",
+		opcode:    0x98,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.TYA() }}
 
 }
