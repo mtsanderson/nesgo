@@ -239,6 +239,13 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 4,
 		execute:   func() { cpu.LDA(cpu.absoluteYAddress()) }}
 
+	cpu.Instructions[0xA1] = Instruction{
+		Name:      "LDA",
+		opcode:    0xA1,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.LDA(cpu.indexedIndirectAddress()) }}
+
 	//LDX
 	cpu.Instructions[0xA2] = Instruction{
 		Name:      "LDX",
