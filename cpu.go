@@ -226,6 +226,13 @@ func (cpu *CPU) checkAndSetOverflowFlag(val byte) {
 ===============================================================================
 */
 
+//AAX ... AND X register with A and store result in memory <addr>
+//flags: N,Z
+func (cpu *CPU) AAX(addr uint16) {
+	val := cpu.A & cpu.X
+	cpu.ram.write(addr, val)
+}
+
 //ADC ... Add with Carry
 //A,Z,C,N = A+M+C
 func (cpu *CPU) ADC(addr uint16) {
@@ -284,6 +291,13 @@ func (cpu *CPU) ASL(addr uint16) {
 	}
 	cpu.checkAndSetZeroFlag(nval)
 	cpu.checkAndSetNegativeFlag(nval)
+}
+
+//ASO ... This opcode ASLs the contents of a memory location and then ORs
+//the result with the accumulator.
+func (cpu *CPU) ASO(addr uint16) {
+	cpu.ASL(addr)
+	cpu.ORA(addr)
 }
 
 //BCC ... Branch if carry clear (If CPU.P.carry = false)
@@ -352,8 +366,7 @@ func (cpu *CPU) BPL(addr uint16) {
 //The program counter and processor status are pushed on the stack then the IRQ
 //interrupt vector at $FFFE/F is loaded into the PC and the break flag in the status set to one.
 func (cpu *CPU) BRK() {
-	fmt.Println("BREAK ENCOUNTERED")
-	//os.Exit(1)
+	os.Exit(1)
 }
 
 //BVC ... Branch if Overflow Clear
@@ -370,6 +383,21 @@ func (cpu *CPU) BVS(addr uint16) {
 		displacement := uint16(cpu.ram.read(addr))
 		cpu.PC += displacement
 	}
+}
+
+//DCP ... Subtract 1 from memory (without borrow).
+func (cpu *CPU) DCP(addr uint16) {
+	val := cpu.ram.read(addr)
+	cpu.ram.write(addr, val-1)
+	cpu.CMP(addr)
+}
+
+//ISC ... This opcode INCs the contents of a memory location and then SBCs
+//the result from the A register.
+func (cpu *CPU) ISC(addr uint16) {
+	val := cpu.ram.read(addr)
+	cpu.ram.write(addr, val+1)
+	cpu.SBC(addr)
 }
 
 //TAX ... X = A
@@ -553,6 +581,15 @@ func (cpu *CPU) INY() {
 	cpu.checkAndSetNegativeFlag(cpu.Y)
 }
 
+//LAX ... Load accumulator and X register from memory address addr
+func (cpu *CPU) LAX(addr uint16) {
+	val := cpu.ram.read(addr)
+	cpu.A = val
+	cpu.X = val
+	cpu.checkAndSetZeroFlag(cpu.A)
+	cpu.checkAndSetNegativeFlag(cpu.A)
+}
+
 //LDA ... Loads the byte at location, addr, into the A register
 func (cpu *CPU) LDA(addr uint16) {
 	val := cpu.ram.read(addr)
@@ -575,6 +612,13 @@ func (cpu *CPU) LDY(addr uint16) {
 	cpu.Y = val
 	cpu.checkAndSetZeroFlag(cpu.Y)
 	cpu.checkAndSetNegativeFlag(cpu.Y)
+}
+
+//LSE ... LSE LSRs the contents of a memory location and then EORs
+//the result with the accumulator.
+func (cpu *CPU) LSE(addr uint16) {
+	cpu.LSR(addr)
+	cpu.EOR(addr)
 }
 
 //LSR ... Logical shift right
@@ -634,6 +678,13 @@ func (cpu *CPU) JSR(addr uint16) {
 	binary.BigEndian.PutUint16(bytes, cpu.PC-1)
 	cpu.sPush(bytes...)
 	cpu.PC = addr
+}
+
+//RRA ... RORs the contents of a memory location and then ADCs the result with
+//the accumulator.
+func (cpu *CPU) RRA(addr uint16) {
+	cpu.ROR(addr)
+	cpu.ADC(addr)
 }
 
 //RTI ... Return from Interrupt
@@ -706,6 +757,13 @@ func (cpu *CPU) PLP() {
 	val = setBit(val, 5)
 	val = clearBit(val, 4)
 	cpu.P = val
+}
+
+//RLA ...ROLs the contents of a memory location and then ANDs the result with
+//the accumulator.
+func (cpu *CPU) RLA(addr uint16) {
+	cpu.ROL(addr)
+	cpu.AND(addr)
 }
 
 //ROL ... Rotate Left

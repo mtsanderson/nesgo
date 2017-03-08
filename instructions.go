@@ -13,6 +13,35 @@ type Instruction struct {
 func (cpu *CPU) loadInstructions() {
 	cpu.Instructions = make(map[byte]Instruction)
 
+	//AAX (UNOFFICIAL)
+	cpu.Instructions[0x87] = Instruction{
+		Name:      "AAX",
+		opcode:    0x87,
+		size:      2,
+		numCycles: 3,
+		execute:   func() { cpu.AAX(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0x97] = Instruction{
+		Name:      "AAX",
+		opcode:    0x97,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.AAX(cpu.zeroPageYAddress()) }}
+
+	cpu.Instructions[0x83] = Instruction{
+		Name:      "AAX",
+		opcode:    0x83,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.AAX(cpu.indexedIndirectAddress()) }}
+
+	cpu.Instructions[0x8F] = Instruction{
+		Name:      "AAX",
+		opcode:    0x8F,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.AAX(cpu.absoluteAddress()) }}
+
 	//ADC
 	cpu.Instructions[0x69] = Instruction{
 		Name:      "ADC",
@@ -162,6 +191,56 @@ func (cpu *CPU) loadInstructions() {
 		size:      3,
 		numCycles: 7,
 		execute:   func() { cpu.ASL(cpu.absoluteXAddress()) }}
+
+	//ASO (UNOFFICIAL)
+	cpu.Instructions[0x07] = Instruction{
+		Name:      "ASO",
+		opcode:    0x07,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.ASO(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0x17] = Instruction{
+		Name:      "ASO",
+		opcode:    0x17,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.ASO(cpu.zeroPageXAddress()) }}
+
+	cpu.Instructions[0x0F] = Instruction{
+		Name:      "ASO",
+		opcode:    0x0F,
+		size:      3,
+		numCycles: 6,
+		execute:   func() { cpu.ASO(cpu.absoluteAddress()) }}
+
+	cpu.Instructions[0x1F] = Instruction{
+		Name:      "ASO",
+		opcode:    0x1F,
+		size:      3,
+		numCycles: 7,
+		execute:   func() { cpu.ASO(cpu.absoluteXAddress()) }}
+
+	cpu.Instructions[0x1B] = Instruction{
+		Name:      "ASO",
+		opcode:    0x1B,
+		size:      3,
+		numCycles: 7,
+		execute:   func() { cpu.ASO(cpu.absoluteYAddress()) }}
+
+	cpu.Instructions[0x03] = Instruction{
+		Name:      "ASO",
+		opcode:    0x03,
+		size:      2,
+		numCycles: 8,
+		execute:   func() { cpu.ASO(cpu.indexedIndirectAddress()) }}
+
+	cpu.Instructions[0x13] = Instruction{
+		Name:      "ASO",
+		opcode:    0x13,
+		size:      2,
+		numCycles: 8,
+		execute:   func() { cpu.ASO(cpu.indirectIndexedAddress()) }}
 
 	//BCC
 	cpu.Instructions[0x90] = Instruction{
@@ -384,6 +463,56 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 4,
 		execute:   func() { cpu.CPY(cpu.absoluteAddress()) }}
 
+	//DCP (UNOFFICIAL)
+	cpu.Instructions[0xC7] = Instruction{
+		Name:      "DCP",
+		opcode:    0xC7,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.DCP(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0xD7] = Instruction{
+		Name:      "DCP",
+		opcode:    0xD7,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.DCP(cpu.zeroPageXAddress()) }}
+
+	cpu.Instructions[0xCF] = Instruction{
+		Name:      "DCP",
+		opcode:    0xCF,
+		size:      3,
+		numCycles: 6,
+		execute:   func() { cpu.DCP(cpu.absoluteAddress()) }}
+
+	cpu.Instructions[0xDF] = Instruction{
+		Name:      "DCP",
+		opcode:    0xDF,
+		size:      3,
+		numCycles: 7,
+		execute:   func() { cpu.DCP(cpu.absoluteXAddress()) }}
+
+	cpu.Instructions[0xDB] = Instruction{
+		Name:      "DCP",
+		opcode:    0xDB,
+		size:      3,
+		numCycles: 7,
+		execute:   func() { cpu.DCP(cpu.absoluteYAddress()) }}
+
+	cpu.Instructions[0xC3] = Instruction{
+		Name:      "DCP",
+		opcode:    0xC3,
+		size:      2,
+		numCycles: 8,
+		execute:   func() { cpu.DCP(cpu.indexedIndirectAddress()) }}
+
+	cpu.Instructions[0xD3] = Instruction{
+		Name:      "DCP",
+		opcode:    0xD3,
+		size:      2,
+		numCycles: 8,
+		execute:   func() { cpu.DCP(cpu.indirectIndexedAddress()) }}
+
 	//DEC
 	cpu.Instructions[0xC6] = Instruction{
 		Name:      "DEC",
@@ -515,6 +644,56 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 7,
 		execute:   func() { cpu.INC(cpu.absoluteXAddress()) }}
 
+	//ISC (UNOFFICIAL)
+	cpu.Instructions[0xE7] = Instruction{
+		Name:      "ISC",
+		opcode:    0xE7,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.ISC(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0xF7] = Instruction{
+		Name:      "ISC",
+		opcode:    0xF7,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.ISC(cpu.zeroPageXAddress()) }}
+
+	cpu.Instructions[0xEF] = Instruction{
+		Name:      "ISC",
+		opcode:    0xEF,
+		size:      3,
+		numCycles: 6,
+		execute:   func() { cpu.ISC(cpu.absoluteAddress()) }}
+
+	cpu.Instructions[0xFF] = Instruction{
+		Name:      "ISC",
+		opcode:    0xFF,
+		size:      3,
+		numCycles: 7,
+		execute:   func() { cpu.ISC(cpu.absoluteXAddress()) }}
+
+	cpu.Instructions[0xFB] = Instruction{
+		Name:      "ISC",
+		opcode:    0xFB,
+		size:      3,
+		numCycles: 7,
+		execute:   func() { cpu.ISC(cpu.absoluteYAddress()) }}
+
+	cpu.Instructions[0xE3] = Instruction{
+		Name:      "ISC",
+		opcode:    0xE3,
+		size:      2,
+		numCycles: 8,
+		execute:   func() { cpu.ISC(cpu.indexedIndirectAddress()) }}
+
+	cpu.Instructions[0xF3] = Instruction{
+		Name:      "ISC",
+		opcode:    0xF3,
+		size:      2,
+		numCycles: 8,
+		execute:   func() { cpu.ISC(cpu.indirectIndexedAddress()) }}
+
 	//INX
 	cpu.Instructions[0xE8] = Instruction{
 		Name:      "DEX",
@@ -553,6 +732,49 @@ func (cpu *CPU) loadInstructions() {
 		size:      3,
 		numCycles: 6,
 		execute:   func() { cpu.JSR(cpu.absoluteAddress()) }}
+
+	//LAX (UNOFFICIAL)
+	cpu.Instructions[0xA7] = Instruction{
+		Name:      "LAX",
+		opcode:    0xA7,
+		size:      2,
+		numCycles: 3,
+		execute:   func() { cpu.LAX(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0xB7] = Instruction{
+		Name:      "LAX",
+		opcode:    0xB7,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.LAX(cpu.zeroPageYAddress()) }}
+
+	cpu.Instructions[0xAF] = Instruction{
+		Name:      "LAX",
+		opcode:    0xAF,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.LAX(cpu.absoluteAddress()) }}
+
+	cpu.Instructions[0xBF] = Instruction{
+		Name:      "LAX",
+		opcode:    0xBF,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.LAX(cpu.absoluteYAddress()) }}
+
+	cpu.Instructions[0xA3] = Instruction{
+		Name:      "LAX",
+		opcode:    0xA3,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.LAX(cpu.indexedIndirectAddress()) }}
+
+	cpu.Instructions[0xB3] = Instruction{
+		Name:      "LAX",
+		opcode:    0xB3,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.LAX(cpu.indirectIndexedAddress()) }}
 
 	//LDA
 	cpu.Instructions[0xA9] = Instruction{
@@ -682,6 +904,56 @@ func (cpu *CPU) loadInstructions() {
 		size:      3,
 		numCycles: 4,
 		execute:   func() { cpu.LDY(cpu.absoluteXAddress()) }}
+
+	//LSE (UNOFFICIAL)
+	cpu.Instructions[0x47] = Instruction{
+		Name:      "LSE",
+		opcode:    0x47,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.LSE(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0x57] = Instruction{
+		Name:      "LSE",
+		opcode:    0x57,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.LSE(cpu.zeroPageXAddress()) }}
+
+	cpu.Instructions[0x4F] = Instruction{
+		Name:      "LSE",
+		opcode:    0x4F,
+		size:      3,
+		numCycles: 6,
+		execute:   func() { cpu.LSE(cpu.absoluteAddress()) }}
+
+	cpu.Instructions[0x5F] = Instruction{
+		Name:      "LSE",
+		opcode:    0x5F,
+		size:      3,
+		numCycles: 7,
+		execute:   func() { cpu.LSE(cpu.absoluteXAddress()) }}
+
+	cpu.Instructions[0x5B] = Instruction{
+		Name:      "LSE",
+		opcode:    0x5B,
+		size:      3,
+		numCycles: 7,
+		execute:   func() { cpu.LSE(cpu.absoluteYAddress()) }}
+
+	cpu.Instructions[0x43] = Instruction{
+		Name:      "LSE",
+		opcode:    0x43,
+		size:      2,
+		numCycles: 8,
+		execute:   func() { cpu.LSE(cpu.indexedIndirectAddress()) }}
+
+	cpu.Instructions[0x53] = Instruction{
+		Name:      "LSE",
+		opcode:    0x53,
+		size:      2,
+		numCycles: 8,
+		execute:   func() { cpu.LSE(cpu.indirectIndexedAddress()) }}
 
 	//LSR
 	cpu.Instructions[0x4A] = Instruction{
@@ -1007,6 +1279,56 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 4,
 		execute:   func() { cpu.PLP() }}
 
+	//RLA (UNOFFICIAL)
+	cpu.Instructions[0x27] = Instruction{
+		Name:      "RLA",
+		opcode:    0x27,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.RLA(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0x37] = Instruction{
+		Name:      "RLA",
+		opcode:    0x37,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.RLA(cpu.zeroPageXAddress()) }}
+
+	cpu.Instructions[0x2F] = Instruction{
+		Name:      "RLA",
+		opcode:    0x2F,
+		size:      3,
+		numCycles: 6,
+		execute:   func() { cpu.RLA(cpu.absoluteAddress()) }}
+
+	cpu.Instructions[0x3F] = Instruction{
+		Name:      "RLA",
+		opcode:    0x3F,
+		size:      3,
+		numCycles: 7,
+		execute:   func() { cpu.RLA(cpu.absoluteXAddress()) }}
+
+	cpu.Instructions[0x3B] = Instruction{
+		Name:      "RLA",
+		opcode:    0x3B,
+		size:      3,
+		numCycles: 7,
+		execute:   func() { cpu.RLA(cpu.absoluteYAddress()) }}
+
+	cpu.Instructions[0x23] = Instruction{
+		Name:      "RLA",
+		opcode:    0x23,
+		size:      2,
+		numCycles: 8,
+		execute:   func() { cpu.RLA(cpu.indexedIndirectAddress()) }}
+
+	cpu.Instructions[0x33] = Instruction{
+		Name:      "RLA",
+		opcode:    0x33,
+		size:      2,
+		numCycles: 8,
+		execute:   func() { cpu.RLA(cpu.indirectIndexedAddress()) }}
+
 	//ROL
 	cpu.Instructions[0x2A] = Instruction{
 		Name:      "ROL",
@@ -1079,6 +1401,56 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 7,
 		execute:   func() { cpu.ROR(cpu.absoluteXAddress()) }}
 
+	//RRA (UNOFFICIAL)
+	cpu.Instructions[0x67] = Instruction{
+		Name:      "RRA",
+		opcode:    0x67,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.RRA(cpu.zeroPageAddress()) }}
+
+	cpu.Instructions[0x77] = Instruction{
+		Name:      "RRA",
+		opcode:    0x77,
+		size:      2,
+		numCycles: 6,
+		execute:   func() { cpu.RRA(cpu.zeroPageXAddress()) }}
+
+	cpu.Instructions[0x6F] = Instruction{
+		Name:      "RRA",
+		opcode:    0x6F,
+		size:      3,
+		numCycles: 6,
+		execute:   func() { cpu.RRA(cpu.absoluteAddress()) }}
+
+	cpu.Instructions[0x7F] = Instruction{
+		Name:      "RRA",
+		opcode:    0x7F,
+		size:      3,
+		numCycles: 7,
+		execute:   func() { cpu.RRA(cpu.absoluteXAddress()) }}
+
+	cpu.Instructions[0x7B] = Instruction{
+		Name:      "RRA",
+		opcode:    0x7B,
+		size:      3,
+		numCycles: 7,
+		execute:   func() { cpu.RRA(cpu.absoluteYAddress()) }}
+
+	cpu.Instructions[0x63] = Instruction{
+		Name:      "RRA",
+		opcode:    0x63,
+		size:      2,
+		numCycles: 8,
+		execute:   func() { cpu.RRA(cpu.indexedIndirectAddress()) }}
+
+	cpu.Instructions[0x73] = Instruction{
+		Name:      "RRA",
+		opcode:    0x73,
+		size:      2,
+		numCycles: 8,
+		execute:   func() { cpu.RRA(cpu.indirectIndexedAddress()) }}
+
 	//RTI
 	cpu.Instructions[0x40] = Instruction{
 		Name:      "RTI",
@@ -1099,6 +1471,13 @@ func (cpu *CPU) loadInstructions() {
 	cpu.Instructions[0xE9] = Instruction{
 		Name:      "SBC",
 		opcode:    0xE9,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.SBC(cpu.immediateAddress()) }}
+
+	cpu.Instructions[0xEB] = Instruction{
+		Name:      "SBC",
+		opcode:    0xEB,
 		size:      2,
 		numCycles: 2,
 		execute:   func() { cpu.SBC(cpu.immediateAddress()) }}
