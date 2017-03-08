@@ -87,18 +87,21 @@ func (cpu *CPU) zeroPageAddress() uint16 {
 }
 
 func (cpu *CPU) zeroPageXAddress() uint16 {
-	fmt.Println("ZERO X PAGE!!")
-	d := cpu.ram.read(cpu.PC - 1)
-	addr := byte(d + cpu.X)
+	lo := cpu.ram.read(cpu.PC-1) + cpu.X
+	hi := byte(0x00)
+	addr := binary.LittleEndian.Uint16([]byte{lo, hi})
 	if addr > 0xFF {
-		fmt.Println("SHOULDA WRAPPED")
+		fmt.Println("WRAP")
 	}
-	return uint16(addr)
+	//fmt.Printf("addr: %04X -- val: %02X\n", addr, cpu.ram.read(addr))
+	return addr
 }
 
 func (cpu *CPU) zeroPageYAddress() uint16 {
-	d := cpu.ram.read(cpu.PC - 1)
-	addr := binary.LittleEndian.Uint16([]byte{d + cpu.Y, 0x00})
+	lo := cpu.ram.read(cpu.immediateAddress()) + cpu.Y
+	hi := byte(0x00)
+	addr := binary.LittleEndian.Uint16([]byte{lo, hi})
+	fmt.Printf("addr: %04X -- val: %02X\n", addr, cpu.ram.read(addr))
 	return addr
 }
 

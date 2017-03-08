@@ -679,8 +679,8 @@ func (cpu *CPU) loadInstructions() {
 	cpu.Instructions[0xBC] = Instruction{
 		Name:      "LDY",
 		opcode:    0xBC,
-		size:      2,
-		numCycles: 2,
+		size:      3,
+		numCycles: 4,
 		execute:   func() { cpu.LDY(cpu.absoluteXAddress()) }}
 
 	//LSR
@@ -1070,7 +1070,7 @@ func (cpu *CPU) loadInstructions() {
 		opcode:    0x94,
 		size:      2,
 		numCycles: 4,
-		execute:   func() { cpu.STY(cpu.zeroPageYAddress()) }}
+		execute:   func() { cpu.STY(cpu.zeroPageXAddress()) }}
 
 	cpu.Instructions[0x8C] = Instruction{
 		Name:      "STY",
