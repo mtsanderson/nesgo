@@ -2,23 +2,30 @@ package main
 
 import (
 	"encoding/binary"
-	"errors"
 	"fmt"
+	"os"
 )
 
-//CPU ...
+//CPU ... Represents a MOS 6502 CPU
+//Reference: http://www.obelisk.me.uk/6502/
 type CPU struct {
-	PC           uint16 //Program counter
-	A            byte   //Accumulator register
-	X            byte   //X register
-	Y            byte   //Y register
-	P            byte   //Status register
-	SP           byte   //Stack pointer
-	Instructions map[byte]Instruction
-	rom          ROM // ROM
-	ram          RAM //TODO: Make this a memory mapper of some sort
+	PC           uint16               //Program counter
+	A            byte                 //Accumulator register
+	X            byte                 //X register
+	Y            byte                 //Y register
+	P            byte                 //Status register
+	SP           byte                 //Stack pointer
+	Instructions map[byte]Instruction //Supported CPU Instructions
+	rom          ROM                  // ROM
+	ram          RAM                  //TODO: Make this a memory mapper of some sort
 	numCycles    int
 }
+
+/*
+===============================================================================
+				CPU Initialization
+===============================================================================
+*/
 
 func (cpu *CPU) init(rom ROM) {
 	cpu.PC = 0xC000
@@ -30,48 +37,43 @@ func (cpu *CPU) init(rom ROM) {
 	cpu.rom = rom
 	cpu.P = 0x24
 	cpu.loadInstructions()
-
-	fmt.Printf("Number of instructions implemented: %d\n", len(cpu.Instructions))
-
-	for i := 0; i < len(cpu.ram); i++ {
-		cpu.ram[i] = 0x00
-	}
-	for i := 0; i < len(rom.prgROM); i++ {
-		cpu.ram[(0xC000 + i)] = rom.prgROM[i]
-	}
-}
-
-//Step ...
-func (cpu *CPU) Step() {
-	instructon := cpu.Instructions[cpu.ram.read(cpu.PC)]
-	err := cpu.executeInstruction(instructon)
-	check(err)
-}
-
-//executeInstruction ... Executes a CPU instructon
-func (cpu *CPU) executeInstruction(i Instruction) error {
-	_, exists := cpu.Instructions[i.opcode]
-	if !exists {
-		etext := fmt.Sprintf("Unknown opcode: %02X at address: %X", cpu.ram.read(cpu.PC), cpu.PC)
-		//fmt.Printf("[% X ]\n", cpu.ram[:0x00FF])
-		return errors.New(etext)
-	}
-	fmt.Printf("%04X|%02X|A:%02X|X:%02X|Y:%02X|P:%02X|SP:%02X\n", cpu.PC, i.opcode, cpu.A, cpu.X, cpu.Y, cpu.P, cpu.SP)
-	cpu.numCycles += i.numCycles
-	cpu.PC += i.size
-	i.execute()
-	return nil
+	cpu.ram.write(0xC000, rom.prgROM...)
 }
 
 /*
 ===============================================================================
-				Addressing Modes (WIP)
+				Step and process and instruction
+===============================================================================
+*/
+
+//Step ...
+func (cpu *CPU) Step() {
+	opcode := cpu.ram.read(cpu.PC)
+	_, exists := cpu.Instructions[opcode]
+	if !exists {
+		fmt.Printf("Unknown opcode: %02X at address: %X", cpu.ram.read(cpu.PC), cpu.PC)
+		os.Exit(1)
+	}
+	instructon := cpu.Instructions[opcode]
+	cpu.executeInstruction(instructon)
+}
+
+//executeInstruction ... Executes a CPU instructon
+func (cpu *CPU) executeInstruction(i Instruction) {
+	fmt.Printf("%04X|%02X|A:%02X|X:%02X|Y:%02X|P:%02X|SP:%02X\n", cpu.PC, i.opcode, cpu.A, cpu.X, cpu.Y, cpu.P, cpu.SP)
+	cpu.numCycles += i.numCycles
+	cpu.PC += i.size
+	i.execute()
+}
+
+/*
+===============================================================================
+				Addressing Modes
 ===============================================================================
 */
 
 //Implied Addressing: Not necessary to have an address returner?
 
-//Accumulator Addressing: Not necessary to have an address returner?
 func (cpu *CPU) accumulatorAddress() uint16 {
 	return 0x000A //Temporary hack way to make A addressing work.
 }
@@ -93,7 +95,6 @@ func (cpu *CPU) zeroPageXAddress() uint16 {
 	if addr > 0xFF {
 		fmt.Println("WRAP")
 	}
-	//fmt.Printf("addr: %04X -- val: %02X\n", addr, cpu.ram.read(addr))
 	return addr
 }
 
@@ -101,7 +102,6 @@ func (cpu *CPU) zeroPageYAddress() uint16 {
 	lo := cpu.ram.read(cpu.immediateAddress()) + cpu.Y
 	hi := byte(0x00)
 	addr := binary.LittleEndian.Uint16([]byte{lo, hi})
-	fmt.Printf("addr: %04X -- val: %02X\n", addr, cpu.ram.read(addr))
 	return addr
 }
 
@@ -175,6 +175,7 @@ func (cpu *CPU) indirectIndexedAddress() uint16 {
 				Stack Operators
 ===============================================================================
 */
+
 func (cpu *CPU) sPush(bytes ...byte) {
 	for _, b := range bytes {
 		addr := binary.LittleEndian.Uint16([]byte{cpu.SP, 0x01}) // stack
@@ -350,7 +351,7 @@ func (cpu *CPU) BPL(addr uint16) {
 //The program counter and processor status are pushed on the stack then the IRQ
 //interrupt vector at $FFFE/F is loaded into the PC and the break flag in the status set to one.
 func (cpu *CPU) BRK() {
-	//fmt.Println("BREAK ENCOUNTERED")
+	fmt.Println("BREAK ENCOUNTERED")
 	//os.Exit(1)
 }
 
