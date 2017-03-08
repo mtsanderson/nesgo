@@ -63,6 +63,13 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 6,
 		execute:   func() { cpu.ADC(cpu.indexedIndirectAddress()) }}
 
+	cpu.Instructions[0x71] = Instruction{
+		Name:      "ADC",
+		opcode:    0x71,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.ADC(cpu.indirectIndexedAddress()) }}
+
 	//AND
 	cpu.Instructions[0x29] = Instruction{
 		Name:      "AND",
@@ -112,6 +119,13 @@ func (cpu *CPU) loadInstructions() {
 		size:      2,
 		numCycles: 6,
 		execute:   func() { cpu.AND(cpu.indexedIndirectAddress()) }}
+
+	cpu.Instructions[0x31] = Instruction{
+		Name:      "AND",
+		opcode:    0x31,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.AND(cpu.indirectIndexedAddress()) }}
 
 	//ASL
 	cpu.Instructions[0x0A] = Instruction{
@@ -319,6 +333,13 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 6,
 		execute:   func() { cpu.CMP(cpu.indexedIndirectAddress()) }}
 
+	cpu.Instructions[0xD1] = Instruction{
+		Name:      "CMP",
+		opcode:    0xD1,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.CMP(cpu.indirectIndexedAddress()) }}
+
 	//CPX
 	cpu.Instructions[0xE0] = Instruction{
 		Name:      "CPX",
@@ -458,6 +479,13 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 6,
 		execute:   func() { cpu.EOR(cpu.indexedIndirectAddress()) }}
 
+	cpu.Instructions[0x51] = Instruction{
+		Name:      "EOR",
+		opcode:    0x51,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.EOR(cpu.indirectIndexedAddress()) }}
+
 	//INC
 	cpu.Instructions[0xE6] = Instruction{
 		Name:      "INC",
@@ -510,6 +538,13 @@ func (cpu *CPU) loadInstructions() {
 		size:      3,
 		numCycles: 3,
 		execute:   func() { cpu.JMP(cpu.absoluteAddress()) }}
+
+	cpu.Instructions[0x6C] = Instruction{
+		Name:      "JMP",
+		opcode:    0x6C,
+		size:      3,
+		numCycles: 5,
+		execute:   func() { cpu.JMP(cpu.indirectAddress()) }}
 
 	//JSR
 	cpu.Instructions[0x20] = Instruction{
@@ -568,6 +603,13 @@ func (cpu *CPU) loadInstructions() {
 		size:      2,
 		numCycles: 6,
 		execute:   func() { cpu.LDA(cpu.indexedIndirectAddress()) }}
+
+	cpu.Instructions[0xB1] = Instruction{
+		Name:      "LDA",
+		opcode:    0xB1,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.LDA(cpu.indirectIndexedAddress()) }}
 
 	//LDX
 	cpu.Instructions[0xA2] = Instruction{
@@ -735,6 +777,13 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 6,
 		execute:   func() { cpu.ORA(cpu.indexedIndirectAddress()) }}
 
+	cpu.Instructions[0x11] = Instruction{
+		Name:      "ORA",
+		opcode:    0x11,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.ORA(cpu.indirectIndexedAddress()) }}
+
 	//PHA
 	cpu.Instructions[0x48] = Instruction{
 		Name:      "PHA",
@@ -785,22 +834,22 @@ func (cpu *CPU) loadInstructions() {
 	cpu.Instructions[0x36] = Instruction{
 		Name:      "ROL",
 		opcode:    0x36,
-		size:      1,
-		numCycles: 2,
+		size:      2,
+		numCycles: 6,
 		execute:   func() { cpu.ROL(cpu.zeroPageXAddress()) }}
 
 	cpu.Instructions[0x2E] = Instruction{
 		Name:      "ROL",
 		opcode:    0x2E,
-		size:      1,
-		numCycles: 2,
+		size:      3,
+		numCycles: 6,
 		execute:   func() { cpu.ROL(cpu.absoluteAddress()) }}
 
 	cpu.Instructions[0x3E] = Instruction{
 		Name:      "ROL",
 		opcode:    0x3E,
-		size:      1,
-		numCycles: 2,
+		size:      3,
+		numCycles: 7,
 		execute:   func() { cpu.ROL(cpu.absoluteXAddress()) }}
 
 	//ROR
@@ -905,6 +954,13 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 6,
 		execute:   func() { cpu.SBC(cpu.indexedIndirectAddress()) }}
 
+	cpu.Instructions[0xF1] = Instruction{
+		Name:      "SBC",
+		opcode:    0xF1,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.SBC(cpu.indirectIndexedAddress()) }}
+
 	//SEC
 	cpu.Instructions[0x38] = Instruction{
 		Name:      "SEC",
@@ -971,6 +1027,13 @@ func (cpu *CPU) loadInstructions() {
 		size:      2,
 		numCycles: 6,
 		execute:   func() { cpu.STA(cpu.indexedIndirectAddress()) }}
+
+	cpu.Instructions[0x91] = Instruction{
+		Name:      "STA",
+		opcode:    0x91,
+		size:      2,
+		numCycles: 5,
+		execute:   func() { cpu.STA(cpu.indirectIndexedAddress()) }}
 
 	//STX
 	cpu.Instructions[0x86] = Instruction{

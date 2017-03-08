@@ -56,7 +56,7 @@ func (cpu *CPU) executeInstruction(i Instruction) error {
 		//fmt.Printf("[% X ]\n", cpu.ram[:0x00FF])
 		return errors.New(etext)
 	}
-	fmt.Printf("%X|%02X|A:%02X|X:%02X|Y:%02X|P:%02X|SP:%02X\n", cpu.PC, i.opcode, cpu.A, cpu.X, cpu.Y, cpu.P, cpu.SP)
+	fmt.Printf("%04X|%02X|A:%02X|X:%02X|Y:%02X|P:%02X|SP:%02X\n", cpu.PC, i.opcode, cpu.A, cpu.X, cpu.Y, cpu.P, cpu.SP)
 	cpu.numCycles += i.numCycles
 	cpu.PC += i.size
 	i.execute()
@@ -89,7 +89,7 @@ func (cpu *CPU) zeroPageAddress() uint16 {
 func (cpu *CPU) zeroPageXAddress() uint16 {
 	fmt.Println("ZERO X PAGE!!")
 	d := cpu.ram.read(cpu.PC - 1)
-	addr := d + cpu.X
+	addr := byte(d + cpu.X)
 	if addr > 0xFF {
 		fmt.Println("SHOULDA WRAPPED")
 	}
@@ -123,6 +123,18 @@ func (cpu *CPU) relativeAddress() uint16 {
 	return cpu.PC
 }
 
+func (cpu *CPU) indirectAddress() uint16 {
+	var hi byte
+	base := cpu.absoluteAddress()
+	lo := cpu.ram.read(cpu.absoluteAddress())
+	hi = cpu.ram.read(cpu.absoluteAddress() + 1)
+	if base&0xFF > 0 {
+		hi = cpu.ram.read(cpu.absoluteAddress() - 0xFF)
+	}
+	addr := binary.LittleEndian.Uint16([]byte{lo, hi})
+	return addr
+}
+
 func (cpu *CPU) indexedIndirectAddress() uint16 {
 	indirectLo := (cpu.ram.read(cpu.immediateAddress()) + cpu.X)
 	indirectHi := byte(0x00)
@@ -139,11 +151,21 @@ func (cpu *CPU) indexedIndirectAddress() uint16 {
 	return addr
 }
 
-/*
-func indirectIndexedAddress() uint16 {
-
+func (cpu *CPU) indirectIndexedAddress() uint16 {
+	indirectLo := cpu.ram.read(cpu.immediateAddress())
+	indirectHi := byte(0x00)
+	lo := binary.LittleEndian.Uint16([]byte{indirectLo, indirectHi})
+	if lo > 0xFF { // try to detect wrap around?
+		lo = (lo - 0xFF)
+	}
+	hi := lo + 1
+	if hi > 0xFF { // try to detect wrap around?
+		hi = hi - (0xFF + 1)
+	}
+	addr := binary.LittleEndian.Uint16([]byte{cpu.ram.read(lo), cpu.ram.read(hi)})
+	addr += uint16(cpu.Y)
+	return addr
 }
-*/
 
 /*
 ===============================================================================
@@ -325,7 +347,8 @@ func (cpu *CPU) BPL(addr uint16) {
 //The program counter and processor status are pushed on the stack then the IRQ
 //interrupt vector at $FFFE/F is loaded into the PC and the break flag in the status set to one.
 func (cpu *CPU) BRK() {
-	//TODO
+	//fmt.Println("BREAK ENCOUNTERED")
+	//os.Exit(1)
 }
 
 //BVC ... Branch if Overflow Clear
