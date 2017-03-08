@@ -385,76 +385,6 @@ func (cpu *CPU) BVS(addr uint16) {
 	}
 }
 
-//DCP ... Subtract 1 from memory (without borrow).
-func (cpu *CPU) DCP(addr uint16) {
-	val := cpu.ram.read(addr)
-	cpu.ram.write(addr, val-1)
-	cpu.CMP(addr)
-}
-
-//ISC ... This opcode INCs the contents of a memory location and then SBCs
-//the result from the A register.
-func (cpu *CPU) ISC(addr uint16) {
-	val := cpu.ram.read(addr)
-	cpu.ram.write(addr, val+1)
-	cpu.SBC(addr)
-}
-
-//TAX ... X = A
-func (cpu *CPU) TAX() {
-	cpu.X = cpu.A
-	cpu.checkAndSetZeroFlag(cpu.X)
-	cpu.checkAndSetNegativeFlag(cpu.X)
-}
-
-//TAY ... Y = A
-func (cpu *CPU) TAY() {
-	cpu.Y = cpu.A
-	cpu.checkAndSetZeroFlag(cpu.Y)
-	cpu.checkAndSetNegativeFlag(cpu.Y)
-}
-
-//TSX ... X = S
-func (cpu *CPU) TSX() {
-	cpu.X = cpu.SP
-	cpu.checkAndSetZeroFlag(cpu.X)
-	cpu.checkAndSetNegativeFlag(cpu.X)
-}
-
-//TXA ... A = X
-func (cpu *CPU) TXA() {
-	cpu.A = cpu.X
-	cpu.checkAndSetZeroFlag(cpu.A)
-	cpu.checkAndSetNegativeFlag(cpu.A)
-}
-
-//TXS ... S = X
-func (cpu *CPU) TXS() {
-	cpu.SP = cpu.X
-}
-
-//TYA ... A = Y
-func (cpu *CPU) TYA() {
-	cpu.A = cpu.Y
-	cpu.checkAndSetZeroFlag(cpu.A)
-	cpu.checkAndSetNegativeFlag(cpu.A)
-}
-
-//SEI ... Sets InterruptDisable flag on CPU status register
-func (cpu *CPU) SEI() {
-	cpu.P = setBit(cpu.P, 2)
-}
-
-//SEC ... Set Carry Flag
-func (cpu *CPU) SEC() {
-	cpu.P = setBit(cpu.P, 0)
-}
-
-//SED ... Sets decimal flag
-func (cpu *CPU) SED() {
-	cpu.P = setBit(cpu.P, 3)
-}
-
 //CLC ... Clears Carry Flag
 func (cpu *CPU) CLC() {
 	cpu.P = clearBit(cpu.P, 0)
@@ -526,6 +456,13 @@ func (cpu *CPU) CPY(addr uint16) {
 	cpu.checkAndSetNegativeFlag(res)
 }
 
+//DCP ... Subtract 1 from memory (without borrow).
+func (cpu *CPU) DCP(addr uint16) {
+	val := cpu.ram.read(addr)
+	cpu.ram.write(addr, val-1)
+	cpu.CMP(addr)
+}
+
 //DEC ... Decrement memory -- M,Z,N = M-1
 func (cpu *CPU) DEC(addr uint16) {
 	oval := cpu.ram.read(addr)
@@ -579,6 +516,29 @@ func (cpu *CPU) INY() {
 	cpu.Y++
 	cpu.checkAndSetZeroFlag(cpu.Y)
 	cpu.checkAndSetNegativeFlag(cpu.Y)
+}
+
+//ISC ... This opcode INCs the contents of a memory location and then SBCs
+//the result from the A register.
+func (cpu *CPU) ISC(addr uint16) {
+	val := cpu.ram.read(addr)
+	cpu.ram.write(addr, val+1)
+	cpu.SBC(addr)
+}
+
+//JMP ... Moves Program Counter to address, addr
+func (cpu *CPU) JMP(addr uint16) {
+	cpu.PC = addr
+}
+
+//JSR -- The JSR instruction pushes the address (minus one) of
+//the return point on to the stack and then sets
+//the program counter to the target memory address.
+func (cpu *CPU) JSR(addr uint16) {
+	bytes := make([]byte, 2)
+	binary.BigEndian.PutUint16(bytes, cpu.PC-1)
+	cpu.sPush(bytes...)
+	cpu.PC = addr
 }
 
 //LAX ... Load accumulator and X register from memory address addr
@@ -650,85 +610,12 @@ func (cpu *CPU) LSR(addr uint16) {
 func (cpu *CPU) NOP() {
 }
 
-//STA ... M = A
-func (cpu *CPU) STA(addr uint16) {
-	cpu.ram.write(addr, cpu.A)
-}
-
-//STX ... M = X
-func (cpu *CPU) STX(addr uint16) {
-	cpu.ram.write(addr, cpu.X)
-}
-
-//STY ... M = Y
-func (cpu *CPU) STY(addr uint16) {
-	cpu.ram.write(addr, cpu.Y)
-}
-
-//JMP ... Moves Program Counter to address, addr
-func (cpu *CPU) JMP(addr uint16) {
-	cpu.PC = addr
-}
-
-//JSR -- The JSR instruction pushes the address (minus one) of
-//the return point on to the stack and then sets
-//the program counter to the target memory address.
-func (cpu *CPU) JSR(addr uint16) {
-	bytes := make([]byte, 2)
-	binary.BigEndian.PutUint16(bytes, cpu.PC-1)
-	cpu.sPush(bytes...)
-	cpu.PC = addr
-}
-
-//RRA ... RORs the contents of a memory location and then ADCs the result with
-//the accumulator.
-func (cpu *CPU) RRA(addr uint16) {
-	cpu.ROR(addr)
-	cpu.ADC(addr)
-}
-
-//RTI ... Return from Interrupt
-//The RTI instruction is used at the end of an interrupt processing routine.
-//It pulls the processor flags from the stack followed by the program counter.
-func (cpu *CPU) RTI() {
-	cpu.PLP() //Pull processor status from stack
-	lo := cpu.sPop()
-	hi := cpu.sPop()
-	cpu.PC = binary.LittleEndian.Uint16([]byte{lo, hi})
-}
-
-//RTS ...
-func (cpu *CPU) RTS() {
-	lo := cpu.sPop()
-	hi := cpu.sPop()
-	addr := binary.LittleEndian.Uint16([]byte{lo, hi})
-	cpu.PC = addr + 1
-}
-
-//SBC ... Subtract with Carry
-//Subtracts the contents of a memory location to the accumulator together with the
-//not of the carry bit. If overflow occurs the carry bit is clear
-//A,Z,C,N = A-M-(1-C)
-func (cpu *CPU) SBC(addr uint16) {
-	A := cpu.A
+//ORA ... Inclusive OR is performed between A register and contents of Memory (A|M)
+func (cpu *CPU) ORA(addr uint16) {
 	M := cpu.ram.read(addr)
-	C := byte(0x00)
-	if hasBit(cpu.P, 0) == true {
-		C = 0x01
-	}
-	cpu.A = A - M - (1 - C)
+	cpu.A = (cpu.A | M)
 	cpu.checkAndSetZeroFlag(cpu.A)
 	cpu.checkAndSetNegativeFlag(cpu.A)
-	if int(A)-int(M)-int(1-C) >= 0 {
-		cpu.P = setBit(cpu.P, 0)
-	} else {
-		cpu.P = clearBit(cpu.P, 0)
-	}
-	if (A^M)&0x80 != 0 && (A^cpu.A)&0x80 != 0 {
-		cpu.P = setBit(cpu.P, 6)
-	} else {
-		cpu.P = clearBit(cpu.P, 6)
-	}
 }
 
 //PHA ... Push Accumulator to Stack
@@ -834,10 +721,123 @@ func (cpu *CPU) ROR(addr uint16) {
 	cpu.checkAndSetZeroFlag(nval)
 }
 
-//ORA ... Inclusive OR is performed between A register and contents of Memory (A|M)
-func (cpu *CPU) ORA(addr uint16) {
+//RRA ... RORs the contents of a memory location and then ADCs the result with
+//the accumulator.
+func (cpu *CPU) RRA(addr uint16) {
+	cpu.ROR(addr)
+	cpu.ADC(addr)
+}
+
+//RTI ... Return from Interrupt
+//The RTI instruction is used at the end of an interrupt processing routine.
+//It pulls the processor flags from the stack followed by the program counter.
+func (cpu *CPU) RTI() {
+	cpu.PLP() //Pull processor status from stack
+	lo := cpu.sPop()
+	hi := cpu.sPop()
+	cpu.PC = binary.LittleEndian.Uint16([]byte{lo, hi})
+}
+
+//RTS ...
+func (cpu *CPU) RTS() {
+	lo := cpu.sPop()
+	hi := cpu.sPop()
+	addr := binary.LittleEndian.Uint16([]byte{lo, hi})
+	cpu.PC = addr + 1
+}
+
+//SBC ... Subtract with Carry
+//Subtracts the contents of a memory location to the accumulator together with the
+//not of the carry bit. If overflow occurs the carry bit is clear
+//A,Z,C,N = A-M-(1-C)
+func (cpu *CPU) SBC(addr uint16) {
+	A := cpu.A
 	M := cpu.ram.read(addr)
-	cpu.A = (cpu.A | M)
+	C := byte(0x00)
+	if hasBit(cpu.P, 0) == true {
+		C = 0x01
+	}
+	cpu.A = A - M - (1 - C)
+	cpu.checkAndSetZeroFlag(cpu.A)
+	cpu.checkAndSetNegativeFlag(cpu.A)
+	if int(A)-int(M)-int(1-C) >= 0 {
+		cpu.P = setBit(cpu.P, 0)
+	} else {
+		cpu.P = clearBit(cpu.P, 0)
+	}
+	if (A^M)&0x80 != 0 && (A^cpu.A)&0x80 != 0 {
+		cpu.P = setBit(cpu.P, 6)
+	} else {
+		cpu.P = clearBit(cpu.P, 6)
+	}
+}
+
+//SEC ... Set Carry Flag
+func (cpu *CPU) SEC() {
+	cpu.P = setBit(cpu.P, 0)
+}
+
+//SED ... Sets decimal flag
+func (cpu *CPU) SED() {
+	cpu.P = setBit(cpu.P, 3)
+}
+
+//SEI ... Sets InterruptDisable flag on CPU status register
+func (cpu *CPU) SEI() {
+	cpu.P = setBit(cpu.P, 2)
+}
+
+//STA ... M = A
+func (cpu *CPU) STA(addr uint16) {
+	cpu.ram.write(addr, cpu.A)
+}
+
+//STX ... M = X
+func (cpu *CPU) STX(addr uint16) {
+	cpu.ram.write(addr, cpu.X)
+}
+
+//STY ... M = Y
+func (cpu *CPU) STY(addr uint16) {
+	cpu.ram.write(addr, cpu.Y)
+}
+
+//TAX ... X = A
+func (cpu *CPU) TAX() {
+	cpu.X = cpu.A
+	cpu.checkAndSetZeroFlag(cpu.X)
+	cpu.checkAndSetNegativeFlag(cpu.X)
+}
+
+//TAY ... Y = A
+func (cpu *CPU) TAY() {
+	cpu.Y = cpu.A
+	cpu.checkAndSetZeroFlag(cpu.Y)
+	cpu.checkAndSetNegativeFlag(cpu.Y)
+}
+
+//TSX ... X = S
+func (cpu *CPU) TSX() {
+	cpu.X = cpu.SP
+	cpu.checkAndSetZeroFlag(cpu.X)
+	cpu.checkAndSetNegativeFlag(cpu.X)
+}
+
+//TXA ... A = X
+func (cpu *CPU) TXA() {
+	cpu.A = cpu.X
+	cpu.checkAndSetZeroFlag(cpu.A)
+	cpu.checkAndSetNegativeFlag(cpu.A)
+}
+
+//TXS ... S = X
+func (cpu *CPU) TXS() {
+	cpu.SP = cpu.X
+}
+
+//TYA ... A = Y
+func (cpu *CPU) TYA() {
+	cpu.A = cpu.Y
 	cpu.checkAndSetZeroFlag(cpu.A)
 	cpu.checkAndSetNegativeFlag(cpu.A)
 }
