@@ -333,8 +333,9 @@ func (cpu *CPU) BMI(addr uint16) {
 //BNE ... Branch if not equal (If CPU.P.zero = false)
 func (cpu *CPU) BNE(addr uint16) {
 	if hasBit(cpu.P, 1) == false {
-		displacement := uint16(cpu.ram.read(addr))
-		cpu.PC += displacement
+		offset := uint16(cpu.ram.read(addr))
+		offset = (offset ^ 0x80) - 0x80
+		cpu.PC += offset
 	}
 }
 
