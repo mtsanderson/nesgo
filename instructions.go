@@ -727,6 +727,197 @@ func (cpu *CPU) loadInstructions() {
 		numCycles: 2,
 		execute:   func() { cpu.NOP() }}
 
+	cpu.Instructions[0x1A] = Instruction{
+		Name:      "NOP",
+		opcode:    0x1A,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x3A] = Instruction{
+		Name:      "NOP",
+		opcode:    0x3A,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x5A] = Instruction{
+		Name:      "NOP",
+		opcode:    0x5A,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x7A] = Instruction{
+		Name:      "NOP",
+		opcode:    0x7A,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0xDA] = Instruction{
+		Name:      "NOP",
+		opcode:    0xDA,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0xFA] = Instruction{
+		Name:      "NOP",
+		opcode:    0xFA,
+		size:      1,
+		numCycles: 2,
+		execute:   func() { cpu.NOP() }}
+
+	//DOP (DOUBLE NOP) (UNOFFICIAL)
+	cpu.Instructions[0x04] = Instruction{
+		Name:      "NOP",
+		opcode:    0x04,
+		size:      2,
+		numCycles: 3,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x14] = Instruction{
+		Name:      "NOP",
+		opcode:    0x14,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x34] = Instruction{
+		Name:      "NOP",
+		opcode:    0x34,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x44] = Instruction{
+		Name:      "NOP",
+		opcode:    0x44,
+		size:      2,
+		numCycles: 3,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x54] = Instruction{
+		Name:      "NOP",
+		opcode:    0x54,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x64] = Instruction{
+		Name:      "NOP",
+		opcode:    0x64,
+		size:      2,
+		numCycles: 3,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x74] = Instruction{
+		Name:      "NOP",
+		opcode:    0x74,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x80] = Instruction{
+		Name:      "NOP",
+		opcode:    0x80,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x82] = Instruction{
+		Name:      "NOP",
+		opcode:    0x82,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x82] = Instruction{
+		Name:      "NOP",
+		opcode:    0x82,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x89] = Instruction{
+		Name:      "NOP",
+		opcode:    0x89,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0xD4] = Instruction{
+		Name:      "NOP",
+		opcode:    0xD4,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0xE2] = Instruction{
+		Name:      "NOP",
+		opcode:    0xE2,
+		size:      2,
+		numCycles: 2,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0xF4] = Instruction{
+		Name:      "NOP",
+		opcode:    0xF4,
+		size:      2,
+		numCycles: 4,
+		execute:   func() { cpu.NOP() }}
+
+	//TOP (TRIPLE NOP) (UNOFFICIAL)
+	cpu.Instructions[0x0C] = Instruction{
+		Name:      "NOP",
+		opcode:    0x0C,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x1C] = Instruction{
+		Name:      "NOP",
+		opcode:    0x1C,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x3C] = Instruction{
+		Name:      "NOP",
+		opcode:    0x3C,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x5C] = Instruction{
+		Name:      "NOP",
+		opcode:    0x5C,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0x7C] = Instruction{
+		Name:      "NOP",
+		opcode:    0x7C,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0xDC] = Instruction{
+		Name:      "NOP",
+		opcode:    0xDC,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.NOP() }}
+
+	cpu.Instructions[0xFC] = Instruction{
+		Name:      "NOP",
+		opcode:    0xFC,
+		size:      3,
+		numCycles: 4,
+		execute:   func() { cpu.NOP() }}
+
 	//ORA
 	cpu.Instructions[0x09] = Instruction{
 		Name:      "ORA",
