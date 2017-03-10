@@ -38,6 +38,7 @@ func (cpu *CPU) init(rom ROM) {
 	cpu.P = 0x24
 	cpu.loadInstructions()
 	cpu.ram.write(0xC000, rom.prgROM...)
+	cpu.ram.write(0x8000, rom.prgROM...)
 }
 
 /*
@@ -366,7 +367,14 @@ func (cpu *CPU) BPL(addr uint16) {
 //The program counter and processor status are pushed on the stack then the IRQ
 //interrupt vector at $FFFE/F is loaded into the PC and the break flag in the status set to one.
 func (cpu *CPU) BRK() {
-	os.Exit(1)
+	bytes := make([]byte, 2)
+	binary.BigEndian.PutUint16(bytes, cpu.PC)
+	cpu.sPush(bytes...)
+	cpu.PHP()
+	cpu.SEI()
+	//hexPrint(cpu.ram.read(0xFFFF))
+	addr := binary.LittleEndian.Uint16([]byte{cpu.ram.read(0xFFFE), cpu.ram.read(0xFFFF)})
+	cpu.PC = addr
 }
 
 //BVC ... Branch if Overflow Clear
