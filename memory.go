@@ -7,7 +7,7 @@ type Memory interface {
 }
 
 //RAM ...
-type RAM [0xFFFF]byte
+type RAM [65536]byte
 
 func (r *RAM) read(addr uint16) byte {
 	return r[addr]
