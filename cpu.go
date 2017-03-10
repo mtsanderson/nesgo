@@ -61,8 +61,15 @@ func (cpu *CPU) Step() {
 
 //executeInstruction ... Executes a CPU instructon
 func (cpu *CPU) executeInstruction(i Instruction) {
-	fmt.Printf("%04X|%02X|A:%02X|X:%02X|Y:%02X|P:%02X|SP:%02X\n", cpu.PC, i.opcode, cpu.A, cpu.X, cpu.Y, cpu.P, cpu.SP)
-	cpu.numCycles += i.numCycles
+	msg := fmt.Sprintf("%04X|%02X|A:%02X|X:%02X|Y:%02X|P:%02X|SP:%02X|CYC:%02d\n", cpu.PC, i.opcode, cpu.A, cpu.X, cpu.Y, cpu.P, cpu.SP, cpu.numCycles)
+
+	fmt.Print(msg)
+	cycs := cpu.numCycles + i.numCycles*3
+	if cycs < 341 {
+		cpu.numCycles = cycs
+	} else {
+		cpu.numCycles = cycs - 341
+	}
 	cpu.PC += i.size
 	i.execute()
 }
@@ -367,12 +374,12 @@ func (cpu *CPU) BPL(addr uint16) {
 //The program counter and processor status are pushed on the stack then the IRQ
 //interrupt vector at $FFFE/F is loaded into the PC and the break flag in the status set to one.
 func (cpu *CPU) BRK() {
+	os.Exit(1)
 	bytes := make([]byte, 2)
 	binary.BigEndian.PutUint16(bytes, cpu.PC)
 	cpu.sPush(bytes...)
 	cpu.PHP()
 	cpu.SEI()
-	//hexPrint(cpu.ram.read(0xFFFF))
 	addr := binary.LittleEndian.Uint16([]byte{cpu.ram.read(0xFFFE), cpu.ram.read(0xFFFF)})
 	cpu.PC = addr
 }
